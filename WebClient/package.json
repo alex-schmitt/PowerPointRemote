@@ -1,0 +1,76 @@
+{
+  "name": "powerpoint-remote-webclient",
+  "author": "Alex Schmitt",
+  "description": "Control your PowerPoint presentation remotely",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alex-schmitt/PowerPointRemote.git"
+  },
+  "license": "AGPL-3.0",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "webpack-dev-server --port 3000 --hot --history-api-fallback"
+  },
+  "dependencies": {
+    "@microsoft/signalr": "^3.1.2",
+    "react": "^16.10.2",
+    "react-dom": "^16.10.2",
+    "react-hot-loader": "^4.12.15",
+    "react-router-dom": "^5.1.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "@babel/preset-react": "^7.6.3",
+    "@hot-loader/react-dom": "^16.10.2",
+    "babel-eslint": "^10.0.3",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-react": "^7.16.0",
+    "eslint-plugin-react-hooks": "^3.0.0",
+    "html-webpack-plugin": "^4.0.4",
+    "prettier": "^2.0.3",
+    "webpack": "^4.41.1",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.2"
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "env": {
+      "browser": true,
+      "es6": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:prettier/recommended"
+    ],
+    "globals": {
+      "Atomics": "readonly",
+      "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "ecmaVersion": 2018,
+      "sourceType": "module"
+    },
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    },
+    "rules": {
+      "react/prop-types": "off",
+      "no-console": "warn"
+    }
+  },
+  "prettier": {
+    "arrowParens": "avoid",
+    "printWidth": 100
+  }
+}
