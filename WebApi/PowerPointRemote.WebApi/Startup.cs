@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,9 +18,13 @@ namespace PowerPointRemote.WebApi
     public class Startup
     {
         private const string DevelopmentCorsPolicy = "_developmentCorsPolicy";
+        private const string ProductionCorsPolicy = "_ProductionCorsPolicy";
 
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
+            _webHostEnvironment = webHostEnvironment;
             Configuration = configuration;
         }
 
@@ -28,18 +33,38 @@ namespace PowerPointRemote.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var mySqlSettings = _webHostEnvironment.IsProduction()
+                ? SecretsManager.GetSecret<MySqlSettings>("ppremote-mysql").Result
+                : Configuration.GetSection("MySql").Get<MySqlSettings>();
+
+            var jwtSettings = _webHostEnvironment.IsProduction()
+                ? SecretsManager.GetSecret<JwtSettings>("ppremote-jwt").Result
+                : Configuration.GetSection("Jwt").Get<JwtSettings>();
+
             services.AddCors(options =>
-                options.AddPolicy(DevelopmentCorsPolicy,
-                    builder => builder
-                        .WithOrigins("http://127.0.0.1:3000", "http://localhost:3000")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials())
+                {
+                    options.AddPolicy(DevelopmentCorsPolicy,
+                        builder => builder
+                            .WithOrigins("http://127.0.0.1:3000", "http://localhost:3000")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials());
+                }
+            );
+
+            services.AddCors(options =>
+                {
+                    options.AddPolicy(ProductionCorsPolicy,
+                        builder => builder
+                            .WithOrigins("https://ppremote.com")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials());
+                }
             );
 
             services.AddDbContextPool<ApplicationDbContext>(options =>
             {
-                var mySqlSettings = Configuration.GetSection("MySql").Get<MySqlSettings>();
                 options.UseMySql(
                     $"Server={mySqlSettings.Server};Database={mySqlSettings.Database};User={mySqlSettings.User};Password={mySqlSettings.Password};");
             });
@@ -48,7 +73,6 @@ namespace PowerPointRemote.WebApi
             services.AddSignalR();
             services.AddMemoryCache();
 
-            var jwtSettings = Configuration.GetSection("Jwt").Get<JwtSettings>();
             services.AddSingleton(s => jwtSettings);
 
             services.AddAuthentication(options =>
@@ -95,6 +119,9 @@ namespace PowerPointRemote.WebApi
 
             if (env.IsDevelopment())
                 app.UseCors(DevelopmentCorsPolicy);
+
+            if (env.IsProduction())
+                app.UseCors(ProductionCorsPolicy);
 
             app.UseAuthentication();
             app.UseAuthorization();
