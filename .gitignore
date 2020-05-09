@@ -3,4 +3,6 @@ obj/
 packages/
 node_modules/
 dist/
+publish/
+*.user
 .vs

@@ -1,8 +1,23 @@
-﻿namespace PowerPointRemote.AddIn
+﻿using System.Windows.Forms;
+
+namespace PowerPointRemote.AddIn
 {
     public static class Constants
     {
-        public static string WebClientAddress => "http://localhost:3000";
-        public static string HostHubAddress => "https://localhost:5001/hub/host";
+        private static bool IsDebug
+        {
+            get
+            {
+#if DEBUG
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
+
+        public static string WebClientAddress => IsDebug ? "http://localhost:3000" : "https://ppremote.com";
+        public static string HostHubAddress => IsDebug ? "https://localhost:5001/hub/host" : "https://api.ppremote.com/hub/host";
+        public static string ApiAddress => IsDebug ? "https://localhost:5001" : "https://api.ppremote.com";
     }
 }

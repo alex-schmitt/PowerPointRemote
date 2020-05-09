@@ -19,7 +19,7 @@ namespace PowerPointRemote.AddIn.Services
 
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-            _httpClient.BaseAddress = new Uri("https://localhost:5001");
+            _httpClient.BaseAddress = new Uri(Constants.ApiAddress);
         }
 
         public event EventHandler<SlideShowCommand> SlideShowCommandReceived;
