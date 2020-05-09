@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { apiAddress } from "../constants";
 
 const JoinChannel = ({ setAccessToken, channelId }) => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -7,7 +8,7 @@ const JoinChannel = ({ setAccessToken, channelId }) => {
   const submit = async event => {
     event.preventDefault();
 
-    const response = await fetch("https://localhost:5001/join-channel", {
+    const response = await fetch(`${apiAddress}/join-channel`, {
       method: "post",
       headers: {
         "Content-Type": "application/json",

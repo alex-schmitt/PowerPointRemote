@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { HubConnectionBuilder } from "@microsoft/signalr";
+import { apiAddress } from "../constants";
 
 const ControlChannel = ({ accessToken }) => {
   const [connectionState, setConnectionState] = useState("disconnected");
   const [connection] = useState(
     new HubConnectionBuilder()
-      .withUrl("https://localhost:5001/hub/user", { accessTokenFactory: () => accessToken })
+      .withUrl(`${apiAddress}/hub/user`, { accessTokenFactory: () => accessToken })
       .build()
   );
 

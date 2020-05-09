@@ -10,7 +10,8 @@
   "license": "AGPL-3.0",
   "main": "src/index.js",
   "scripts": {
-    "start": "webpack-dev-server --port 3000 --hot --history-api-fallback"
+    "start": "webpack-dev-server --port 3000 --hot --history-api-fallback --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js"
   },
   "dependencies": {
     "@microsoft/signalr": "^3.1.2",
@@ -35,7 +36,8 @@
     "prettier": "^2.0.3",
     "webpack": "^4.41.1",
     "webpack-cli": "^3.3.9",
-    "webpack-dev-server": "^3.8.2"
+    "webpack-dev-server": "^3.8.2",
+    "webpack-merge": "^4.2.2"
   },
   "eslintConfig": {
     "parser": "babel-eslint",
