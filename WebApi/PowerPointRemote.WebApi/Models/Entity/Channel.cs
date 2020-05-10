@@ -6,6 +6,7 @@ namespace PowerPointRemote.WebApi.Models.Entity
     {
         public string Id { get; set; }
         public string HostConnectionId { get; set; }
+        public bool SlideShowEnabled { get; set; }
 
         public virtual ICollection<User> Users { get; set; }
     }

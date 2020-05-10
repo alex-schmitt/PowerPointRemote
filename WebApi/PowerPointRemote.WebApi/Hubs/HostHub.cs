@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -33,10 +34,7 @@ namespace PowerPointRemote.WebApi.Hubs
 
             _memoryCache.Set(channelId, Context.ConnectionId);
 
-            var userConnections = await _applicationDbContext.UserConnections.AsNoTracking()
-                .Where(conn => conn.ChannelId == channelId).ToListAsync();
-
-            await _userHubContext.SendHostConnected(userConnections);
+            await _userHubContext.SendHostConnected(await GetUserConnections(channelId));
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
@@ -52,23 +50,45 @@ namespace PowerPointRemote.WebApi.Hubs
 
             _memoryCache.Remove(channelId);
 
-            var userConnections = await _applicationDbContext.UserConnections.AsNoTracking()
-                .Where(conn => conn.ChannelId == channelId).ToListAsync();
-
-            await _userHubContext.SendHostDisconnected(userConnections);
+            await _userHubContext.SendHostDisconnected(await GetUserConnections(channelId));
         }
 
         public async Task EndChannel()
         {
             var channelId = Context.User.FindFirst("ChannelId").Value;
-            var userConnections = await _applicationDbContext.UserConnections.AsNoTracking()
-                .Where(conn => conn.ChannelId == channelId).ToListAsync();
-
-            await _userHubContext.SendChannelEnded(userConnections);
+            await _userHubContext.SendChannelEnded(await GetUserConnections(channelId));
 
             _applicationDbContext.Channels.Remove(new Channel {Id = channelId});
             await _applicationDbContext.SaveChangesAsync();
             _memoryCache.Remove(channelId);
+        }
+
+        public async Task StartSlideShow()
+        {
+            var channelId = Context.User.FindFirst("ChannelId").Value;
+            var channel = await _applicationDbContext.Channels.FindAsync(channelId);
+
+            channel.SlideShowEnabled = true;
+            await _applicationDbContext.SaveChangesAsync();
+
+            await _userHubContext.SendSlideShowStarted(await GetUserConnections(channelId));
+        }
+
+        public async Task EndSlideShow()
+        {
+            var channelId = Context.User.FindFirst("ChannelId").Value;
+            var channel = await _applicationDbContext.Channels.FindAsync(channelId);
+
+            channel.SlideShowEnabled = false;
+            await _applicationDbContext.SaveChangesAsync();
+
+            await _userHubContext.SendSlideShowEnded(await GetUserConnections(channelId));
+        }
+
+        private Task<List<UserConnection>> GetUserConnections(string channelId)
+        {
+            return _applicationDbContext.UserConnections.AsNoTracking()
+                .Where(conn => conn.ChannelId == channelId).ToListAsync();
         }
     }
 }

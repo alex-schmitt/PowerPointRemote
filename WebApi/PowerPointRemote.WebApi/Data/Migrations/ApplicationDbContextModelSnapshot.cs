@@ -26,6 +26,9 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                     .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
                     .HasMaxLength(255);
 
+                b.Property<bool>("SlideShowEnabled")
+                    .HasColumnType("tinyint(1)");
+
                 b.HasKey("Id");
 
                 b.ToTable("Channels");
