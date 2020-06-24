@@ -22,12 +22,24 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 b.Property<string>("Id")
                     .HasColumnType("char(9)");
 
+                b.Property<int>("CurrentSlide")
+                    .HasColumnType("int");
+
                 b.Property<string>("HostConnectionId")
                     .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
                     .HasMaxLength(255);
 
+                b.Property<DateTime>("LastUpdate")
+                    .HasColumnType("datetime(6)");
+
                 b.Property<bool>("SlideShowEnabled")
                     .HasColumnType("tinyint(1)");
+
+                b.Property<string>("SlideShowTitle")
+                    .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                b.Property<int>("TotalSlides")
+                    .HasColumnType("int");
 
                 b.HasKey("Id");
 
