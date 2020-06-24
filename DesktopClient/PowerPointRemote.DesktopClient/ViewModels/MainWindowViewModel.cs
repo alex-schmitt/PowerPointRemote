@@ -1,7 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Office.Interop.PowerPoint;
 
 namespace PowerPointRemote.DesktopClient.ViewModels
 {
@@ -32,12 +34,30 @@ namespace PowerPointRemote.DesktopClient.ViewModels
 
             _channelService.HubConnection.On<User>("UserConnected", AddUser);
             _channelService.HubConnection.On<User>("UserDisconnected", RemoveUser);
-            _channelService.HubConnection.On<SlideShowCommand>("SlideShowCommand", ProcessSlideShowCommand);
+            _channelService.HubConnection.On<SlideShowCommand>("SlideShowCommand", _slideShowManager.ProcessCommand);
+
+            _slideShowManager.Application.SlideShowNextSlide += async ssw => await SendSlideShowMeta(ssw);
+            _slideShowManager.Application.SlideShowEnd += async pres => await SendSlideShowMeta(pres);
+
+            if (_slideShowManager.LastOpenedSlideShow != null)
+                await SendSlideShowMeta(_slideShowManager.LastOpenedSlideShow);
         }
 
-        private void ProcessSlideShowCommand(SlideShowCommand slideShowCommand)
+        private async Task SendSlideShowMeta(SlideShowWindow slideShowWindow)
         {
-            _slideShowManager.ProcessCommand(slideShowCommand);
+            await SendSlideShowMeta(slideShowWindow.Presentation, slideShowWindow.View);
+        }
+
+        private async Task SendSlideShowMeta(Presentation presentation, SlideShowView slideShowView = null)
+        {
+            await _channelService.SendSlideShowMeta(new SlideShowMeta
+            {
+                SlideShowEnabled = _slideShowManager.LastOpenedSlideShow != null,
+                Title = presentation?.Name ?? "",
+                CurrentSlide = slideShowView?.CurrentShowPosition ?? 0,
+                TotalSlides = presentation?.Slides.Count ?? 0,
+                Timestamp = DateTime.Now
+            });
         }
 
         private void AddUser(User user)

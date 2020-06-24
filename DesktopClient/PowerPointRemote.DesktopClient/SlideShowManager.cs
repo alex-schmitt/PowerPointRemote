@@ -5,15 +5,15 @@ namespace PowerPointRemote.DesktopClient
 {
     public class SlideShowManager
     {
-        private readonly Application _application;
+        public readonly Application Application;
 
         public SlideShowManager(Application application)
         {
-            _application = application;
+            Application = application;
         }
 
         public SlideShowWindow LastOpenedSlideShow =>
-            _application.SlideShowWindows.Cast<SlideShowWindow>()
+            Application.SlideShowWindows.Cast<SlideShowWindow>()
                 .LastOrDefault();
 
         public void ProcessCommand(SlideShowCommand command)

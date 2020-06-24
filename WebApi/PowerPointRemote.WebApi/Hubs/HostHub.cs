@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using PowerPointRemote.WebAPI.Data;
 using PowerPointRemote.WebApi.Extensions;
+using PowerPointRemote.WebApi.Models;
 using PowerPointRemote.WebApi.Models.Entity;
 
 namespace PowerPointRemote.WebApi.Hubs
@@ -53,36 +54,19 @@ namespace PowerPointRemote.WebApi.Hubs
             await _userHubContext.SendHostDisconnected(await GetUserConnections(channelId));
         }
 
-        public async Task EndChannel()
+        public async Task SendSlideShowMeta(SlideShowMeta slideShowMeta)
         {
             var channelId = Context.User.FindFirst("ChannelId").Value;
-            await _userHubContext.SendChannelEnded(await GetUserConnections(channelId));
+            await _userHubContext.SendSlideShowMeta(await GetUserConnections(channelId), slideShowMeta);
 
-            _applicationDbContext.Channels.Remove(new Channel {Id = channelId});
-            await _applicationDbContext.SaveChangesAsync();
-            _memoryCache.Remove(channelId);
-        }
-
-        public async Task StartSlideShow()
-        {
-            var channelId = Context.User.FindFirst("ChannelId").Value;
             var channel = await _applicationDbContext.Channels.FindAsync(channelId);
+            channel.SlideShowEnabled = slideShowMeta.SlideShowEnabled;
+            channel.SlideShowTitle = slideShowMeta.Title;
+            channel.CurrentSlide = slideShowMeta.CurrentSlide;
+            channel.TotalSlides = slideShowMeta.TotalSlides;
+            channel.LastUpdate = slideShowMeta.Timestamp;
 
-            channel.SlideShowEnabled = true;
             await _applicationDbContext.SaveChangesAsync();
-
-            await _userHubContext.SendSlideShowStarted(await GetUserConnections(channelId));
-        }
-
-        public async Task EndSlideShow()
-        {
-            var channelId = Context.User.FindFirst("ChannelId").Value;
-            var channel = await _applicationDbContext.Channels.FindAsync(channelId);
-
-            channel.SlideShowEnabled = false;
-            await _applicationDbContext.SaveChangesAsync();
-
-            await _userHubContext.SendSlideShowEnded(await GetUserConnections(channelId));
         }
 
         private Task<List<UserConnection>> GetUserConnections(string channelId)

@@ -44,6 +44,11 @@ namespace PowerPointRemote.DesktopClient
             ChannelId = null;
         }
 
+        public async Task SendSlideShowMeta(SlideShowMeta slideShowMeta)
+        {
+            await HubConnection.SendAsync("SendSlideShowMeta", slideShowMeta);
+        }
+
         private async Task<HttpResponseMessage> CreateChannel()
         {
             var responseMessage = await _httpClient.PostAsync("create-channel", null);
