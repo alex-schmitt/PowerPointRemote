@@ -54,17 +54,17 @@ namespace PowerPointRemote.WebApi.Hubs
             await _userHubContext.SendHostDisconnected(await GetUserConnections(channelId));
         }
 
-        public async Task SendSlideShowMeta(SlideShowMeta slideShowMeta)
+        public async Task SendSlideShowDetail(SlideShowMeta SlideShowDetail)
         {
             var channelId = Context.User.FindFirst("ChannelId").Value;
-            await _userHubContext.SendSlideShowMeta(await GetUserConnections(channelId), slideShowMeta);
+            await _userHubContext.SendSlideShowDetail(await GetUserConnections(channelId), SlideShowDetail);
 
             var channel = await _applicationDbContext.Channels.FindAsync(channelId);
-            channel.SlideShowEnabled = slideShowMeta.SlideShowEnabled;
-            channel.SlideShowTitle = slideShowMeta.Title;
-            channel.CurrentSlide = slideShowMeta.CurrentSlide;
-            channel.TotalSlides = slideShowMeta.TotalSlides;
-            channel.LastUpdate = slideShowMeta.Timestamp;
+            channel.SlideShowEnabled = SlideShowDetail.SlideShowEnabled;
+            channel.SlideShowTitle = SlideShowDetail.Title;
+            channel.CurrentSlide = SlideShowDetail.CurrentSlide;
+            channel.TotalSlides = SlideShowDetail.TotalSlides;
+            channel.LastUpdate = SlideShowDetail.Timestamp;
 
             await _applicationDbContext.SaveChangesAsync();
         }

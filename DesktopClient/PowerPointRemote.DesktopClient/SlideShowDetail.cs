@@ -2,7 +2,7 @@
 
 namespace PowerPointRemote.DesktopClient
 {
-    public class SlideShowMeta
+    public class SlideShowDetail
     {
         public bool SlideShowEnabled { get; set; }
         public string Title { get; set; }

@@ -2,13 +2,14 @@
 using System.Threading.Tasks;
 using System.Windows;
 using PowerPointRemote.DesktopClient.ViewModels;
+using PowerPointApplication = Microsoft.Office.Interop.PowerPoint.Application;
 
 namespace PowerPointRemote.DesktopClient
 {
     public partial class App : Application
     {
         private readonly MainWindow _mainWindow;
-        private Microsoft.Office.Interop.PowerPoint.Application _application;
+        private PowerPointApplication _powerPointApplication;
 
         public App()
         {
@@ -24,25 +25,32 @@ namespace PowerPointRemote.DesktopClient
 
         private async Task LoadAsync()
         {
-            await CreateApplicationAsync();
-            var slideShowManager = new SlideShowManager(_application);
             var channelService = new ChannelService();
+            _mainWindow.DataContext = new MainWindowViewModel(channelService);
 
-            var mainWindowViewModel = new MainWindowViewModel(channelService, slideShowManager);
-            _mainWindow.DataContext = mainWindowViewModel;
+            _powerPointApplication = await CreateApplicationAsync();
+            await channelService.StartChannel();
 
-            await mainWindowViewModel.LoadAsync();
+            var slideShowManager = new SlideShowManager(_powerPointApplication);
+
+            if (slideShowManager.SlideShowDetail.SlideShowEnabled)
+                await channelService.SendSlideShowDetail(slideShowManager.SlideShowDetail);
+
+            // Link ShowSlideManager and ChannelService via events
+            slideShowManager.OnSlideShowDetailChange += async (sender, slideShowDetail) =>
+                await channelService.SendSlideShowDetail(slideShowDetail);
+            channelService.SlideShowCommandReceived += (sender, command) => slideShowManager.ProcessCommand(command);
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
-            Marshal.ReleaseComObject(_application);
+            Marshal.ReleaseComObject(_powerPointApplication);
         }
 
-        private async Task CreateApplicationAsync()
+        private async Task<PowerPointApplication> CreateApplicationAsync()
         {
-            await Task.Run(() => _application = new Microsoft.Office.Interop.PowerPoint.Application());
+            return await Task.Run(() => new PowerPointApplication());
         }
     }
 }

@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Office.Interop.PowerPoint;
 
 namespace PowerPointRemote.DesktopClient.ViewModels
 {
     public class MainWindowViewModel : BaseViewModel
     {
-        private readonly ChannelService _channelService;
-        private readonly SlideShowManager _slideShowManager;
+        private string _channelUri;
 
-        public MainWindowViewModel(ChannelService channelService, SlideShowManager slideShowManager)
+        public MainWindowViewModel(ChannelService channelService)
         {
-            _channelService = channelService;
-            _slideShowManager = slideShowManager;
+            var channelService1 = channelService;
+
+            channelService1.UserConnected += (sender, user) => AddUser(user);
+            channelService1.UserDisconnected += (sender, user) => RemoveUser(user);
+            channelService1.ChannelStarted += (sender, channelUri) => ChannelUri = channelUri;
 
             ConnectedUsers = new ObservableCollection<User>();
         }
@@ -23,41 +21,14 @@ namespace PowerPointRemote.DesktopClient.ViewModels
         public ObservableCollection<User> ConnectedUsers { get; }
 
 
-        public string ChannelUri => _channelService.ChannelId == null
-            ? null
-            : $"{Constants.WebClientAddress}/{_channelService.ChannelId}";
-
-        public async Task LoadAsync()
+        public string ChannelUri
         {
-            await _channelService.StartChannel();
-            OnPropertyChanged(nameof(ChannelUri));
-
-            _channelService.HubConnection.On<User>("UserConnected", AddUser);
-            _channelService.HubConnection.On<User>("UserDisconnected", RemoveUser);
-            _channelService.HubConnection.On<SlideShowCommand>("SlideShowCommand", _slideShowManager.ProcessCommand);
-
-            _slideShowManager.Application.SlideShowNextSlide += async ssw => await SendSlideShowMeta(ssw);
-            _slideShowManager.Application.SlideShowEnd += async pres => await SendSlideShowMeta(pres);
-
-            if (_slideShowManager.LastOpenedSlideShow != null)
-                await SendSlideShowMeta(_slideShowManager.LastOpenedSlideShow);
-        }
-
-        private async Task SendSlideShowMeta(SlideShowWindow slideShowWindow)
-        {
-            await SendSlideShowMeta(slideShowWindow.Presentation, slideShowWindow.View);
-        }
-
-        private async Task SendSlideShowMeta(Presentation presentation, SlideShowView slideShowView = null)
-        {
-            await _channelService.SendSlideShowMeta(new SlideShowMeta
+            get => _channelUri;
+            set
             {
-                SlideShowEnabled = _slideShowManager.LastOpenedSlideShow != null,
-                Title = presentation?.Name ?? "",
-                CurrentSlide = slideShowView?.CurrentShowPosition ?? 0,
-                TotalSlides = presentation?.Slides.Count ?? 0,
-                Timestamp = DateTime.Now
-            });
+                _channelUri = $"{Constants.WebClientAddress}/{value}";
+                OnPropertyChanged();
+            }
         }
 
         private void AddUser(User user)

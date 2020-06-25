@@ -11,6 +11,14 @@ namespace PowerPointRemote.DesktopClient
     {
         private readonly HttpClient _httpClient;
 
+        public EventHandler<string> ChannelStarted;
+
+        public EventHandler<SlideShowCommand> SlideShowCommandReceived;
+
+        public EventHandler<User> UserConnected;
+
+        public EventHandler<User> UserDisconnected;
+
         public ChannelService()
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -19,8 +27,6 @@ namespace PowerPointRemote.DesktopClient
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             _httpClient.BaseAddress = new Uri(Constants.ApiAddress);
         }
-
-        public string ChannelId { get; private set; }
 
         public HubConnection HubConnection { get; private set; }
 
@@ -34,19 +40,19 @@ namespace PowerPointRemote.DesktopClient
         {
             var response = await CreateChannel();
             var channel = await response.Content.Deserialize<Channel>();
-            await StartHubConnection(channel.AccessToken);
-            ChannelId = channel.ChannelId;
+            var hubConnection = await StartHubConnection(channel.AccessToken);
+
+            hubConnection.On<User>("UserConnected", user => UserConnected?.Invoke(this, user));
+            hubConnection.On<User>("UserDisconnected", user => UserDisconnected?.Invoke(this, user));
+            hubConnection.On<SlideShowCommand>("SlideShowCommand",
+                command => SlideShowCommandReceived?.Invoke(this, command));
+
+            ChannelStarted?.Invoke(this, channel.ChannelId);
         }
 
-        public async Task StopChannel()
+        public async Task SendSlideShowDetail(SlideShowDetail slideShowDetail)
         {
-            await StopHubConnection();
-            ChannelId = null;
-        }
-
-        public async Task SendSlideShowMeta(SlideShowMeta slideShowMeta)
-        {
-            await HubConnection.SendAsync("SendSlideShowMeta", slideShowMeta);
+            await HubConnection.SendAsync("SendSlideShowDetail", slideShowDetail);
         }
 
         private async Task<HttpResponseMessage> CreateChannel()
@@ -55,7 +61,7 @@ namespace PowerPointRemote.DesktopClient
             return responseMessage;
         }
 
-        private async Task StartHubConnection(string accessToken)
+        private async Task<HubConnection> StartHubConnection(string accessToken)
         {
             await Task.Run(() =>
             {
@@ -67,15 +73,7 @@ namespace PowerPointRemote.DesktopClient
             });
 
             await HubConnection.StartAsync();
-        }
-
-        private async Task StopHubConnection()
-        {
-            if (HubConnection != null)
-            {
-                await HubConnection.DisposeAsync();
-                HubConnection = null;
-            }
+            return HubConnection;
         }
     }
 }
