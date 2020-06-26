@@ -11,6 +11,8 @@ namespace PowerPointRemote.DesktopClient
     {
         private readonly HttpClient _httpClient;
 
+        private HubConnection _hubConnection;
+
         public EventHandler<string> ChannelStarted;
 
         public EventHandler<SlideShowCommand> SlideShowCommandReceived;
@@ -28,12 +30,10 @@ namespace PowerPointRemote.DesktopClient
             _httpClient.BaseAddress = new Uri(Constants.ApiAddress);
         }
 
-        public HubConnection HubConnection { get; private set; }
-
         public void Dispose()
         {
             _httpClient?.Dispose();
-            HubConnection?.DisposeAsync();
+            _hubConnection?.DisposeAsync();
         }
 
         public async Task StartChannel()
@@ -52,7 +52,7 @@ namespace PowerPointRemote.DesktopClient
 
         public async Task SendSlideShowDetail(SlideShowDetail slideShowDetail)
         {
-            await HubConnection.SendAsync("SendSlideShowDetail", slideShowDetail);
+            await _hubConnection.SendAsync("SendSlideShowDetail", slideShowDetail);
         }
 
         private async Task<HttpResponseMessage> CreateChannel()
@@ -65,15 +65,15 @@ namespace PowerPointRemote.DesktopClient
         {
             await Task.Run(() =>
             {
-                HubConnection = HubConnection = new HubConnectionBuilder()
+                _hubConnection = _hubConnection = new HubConnectionBuilder()
                     .WithUrl(Constants.HostHubAddress,
                         options => { options.AccessTokenProvider = () => Task.FromResult(accessToken); })
                     .WithAutomaticReconnect()
                     .Build();
             });
 
-            await HubConnection.StartAsync();
-            return HubConnection;
+            await _hubConnection.StartAsync();
+            return _hubConnection;
         }
     }
 }
