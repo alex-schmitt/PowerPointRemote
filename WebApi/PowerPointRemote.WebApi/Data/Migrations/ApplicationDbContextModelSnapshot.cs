@@ -35,7 +35,7 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 b.Property<bool>("SlideShowEnabled")
                     .HasColumnType("tinyint(1)");
 
-                b.Property<string>("SlideShowTitle")
+                b.Property<string>("SlideShowName")
                     .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                 b.Property<int>("TotalSlides")

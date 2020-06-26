@@ -67,9 +67,9 @@ namespace PowerPointRemote.WebApi.Extensions
         }
 
         public static Task SendSlideShowDetail(this IHubContext<UserHub> hubContext,
-            IEnumerable<UserConnection> userConnections, SlideShowMeta slideShowMeta)
+            IEnumerable<UserConnection> userConnections, SlideShowDetail slideShowDetail)
         {
-            return hubContext.SendAllUsers(userConnections, "ReceiveSlideShowMeta", new object[] {slideShowMeta});
+            return hubContext.SendAllUsers(userConnections, "ReceiveSlideShowMeta", new object[] {slideShowDetail});
         }
 
         public static Task SendSlideShowEnded(this IHubContext<UserHub> hubContext,

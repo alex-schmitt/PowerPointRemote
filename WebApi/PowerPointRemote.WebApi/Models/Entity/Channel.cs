@@ -9,7 +9,7 @@ namespace PowerPointRemote.WebApi.Models.Entity
         public string HostConnectionId { get; set; }
         public bool SlideShowEnabled { get; set; }
 
-        public string SlideShowTitle { get; set; }
+        public string SlideShowName { get; set; }
 
         public int CurrentSlide { get; set; }
 

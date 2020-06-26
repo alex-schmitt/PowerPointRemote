@@ -92,10 +92,10 @@ namespace PowerPointRemote.WebApi.Hubs
 
             if (channel == null) return new HubActionResult(HttpStatusCode.NotFound);
 
-            var slideShowMeta = new SlideShowMeta
+            var slideShowMeta = new SlideShowDetail
             {
                 SlideShowEnabled = channel.SlideShowEnabled,
-                Title = channel.SlideShowTitle,
+                SlideShowName = channel.SlideShowName,
                 CurrentSlide = channel.CurrentSlide,
                 TotalSlides = channel.TotalSlides,
                 Timestamp = channel.LastUpdate
