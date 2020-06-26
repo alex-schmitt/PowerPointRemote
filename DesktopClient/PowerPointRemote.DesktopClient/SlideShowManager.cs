@@ -53,11 +53,17 @@ namespace PowerPointRemote.DesktopClient
 
         private void ApplicationOnSlideShowEnd(Presentation presentation)
         {
-            if (_application.SlideShowWindows.Cast<SlideShowWindow>().Contains(_slideShowWindow))
-                return;
-
-            _slideShowWindow = null;
-            ResetSlideShowDetail();
+            /*
+                It's possible that a non-active slide show ended.
+                The first clause is true if the active slide show ended manually.
+                The second clause is true if the active slide show ended by clicking through to the end.
+             */
+            if (!_application.SlideShowWindows.Cast<SlideShowWindow>().Contains(_slideShowWindow) ||
+                _slideShowWindow.View.State == PpSlideShowState.ppSlideShowDone)
+            {
+                _slideShowWindow = null;
+                ResetSlideShowDetail();
+            }
         }
 
         private void ApplicationOnSlideShowNextSlide(SlideShowWindow slideShowWindow)
