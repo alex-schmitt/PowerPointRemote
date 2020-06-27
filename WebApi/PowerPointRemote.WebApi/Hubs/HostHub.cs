@@ -54,19 +54,32 @@ namespace PowerPointRemote.WebApi.Hubs
             await _userHubContext.SendHostDisconnected(await GetUserConnections(channelId));
         }
 
-        public async Task SendSlideShowDetail(SlideShowDetail SlideShowDetail)
+        public async Task UpdateSlideShowDetail(SlideShowDetail slideShowDetail)
         {
             var channelId = Context.User.FindFirst("ChannelId").Value;
-            await _userHubContext.SendSlideShowDetail(await GetUserConnections(channelId), SlideShowDetail);
+            await _userHubContext.SendSlideShowDetail(await GetUserConnections(channelId), slideShowDetail);
 
             var channel = await _applicationDbContext.Channels.FindAsync(channelId);
-            channel.SlideShowEnabled = SlideShowDetail.SlideShowEnabled;
-            channel.SlideShowName = SlideShowDetail.SlideShowName;
-            channel.CurrentSlide = SlideShowDetail.CurrentSlide;
-            channel.TotalSlides = SlideShowDetail.TotalSlides;
-            channel.LastUpdate = SlideShowDetail.Timestamp;
+            channel.SlideShowEnabled = slideShowDetail.SlideShowEnabled;
+            channel.SlideShowName = slideShowDetail.SlideShowName;
+            channel.CurrentSlide = slideShowDetail.CurrentSlide;
+            channel.TotalSlides = slideShowDetail.TotalSlides;
+            channel.LastUpdate = slideShowDetail.Timestamp;
 
             await _applicationDbContext.SaveChangesAsync();
+        }
+
+        public async Task EndChannel()
+        {
+            var channelId = Context.User.FindFirst("ChannelId").Value;
+
+            var channel = await _applicationDbContext.Channels.FindAsync(channelId);
+            channel.ChannelEnded = true;
+            channel.LastUpdate = DateTime.Now;
+
+            await _applicationDbContext.SaveChangesAsync();
+
+            await _userHubContext.SendChannelEnded(await GetUserConnections(channelId));
         }
 
         private Task<List<UserConnection>> GetUserConnections(string channelId)

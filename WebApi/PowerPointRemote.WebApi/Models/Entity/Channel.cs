@@ -6,7 +6,11 @@ namespace PowerPointRemote.WebApi.Models.Entity
     public class Channel
     {
         public string Id { get; set; }
+
         public string HostConnectionId { get; set; }
+
+        public bool ChannelEnded { get; set; }
+
         public bool SlideShowEnabled { get; set; }
 
         public string SlideShowName { get; set; }

@@ -30,10 +30,14 @@ namespace PowerPointRemote.DesktopClient
             _httpClient.BaseAddress = new Uri(Constants.ApiAddress);
         }
 
+        public HubConnectionState State => _hubConnection?.State ?? HubConnectionState.Disconnected;
+
         public void Dispose()
         {
-            _httpClient?.Dispose();
-            _hubConnection?.DisposeAsync();
+            if (_hubConnection != null)
+                throw new InvalidOperationException("End the channel before disposing.");
+
+            _httpClient.Dispose();
         }
 
         public async Task StartChannel()
@@ -50,9 +54,19 @@ namespace PowerPointRemote.DesktopClient
             ChannelStarted?.Invoke(this, channel.ChannelId);
         }
 
-        public async Task SendSlideShowDetail(SlideShowDetail slideShowDetail)
+        public async Task EndChannel()
         {
-            await _hubConnection.SendAsync("SendSlideShowDetail", slideShowDetail);
+            if (_hubConnection == null)
+                return;
+
+            await _hubConnection.SendAsync("EndChannel");
+            await _hubConnection.DisposeAsync();
+            _hubConnection = null;
+        }
+
+        public async Task UpdateSlideShowDetail(SlideShowDetail slideShowDetail)
+        {
+            await _hubConnection.SendAsync("UpdateSlideShowDetail", slideShowDetail);
         }
 
         private async Task<HttpResponseMessage> CreateChannel()

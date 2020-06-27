@@ -22,6 +22,9 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 b.Property<string>("Id")
                     .HasColumnType("char(9)");
 
+                b.Property<bool>("ChannelEnded")
+                    .HasColumnType("tinyint(1)");
+
                 b.Property<int>("CurrentSlide")
                     .HasColumnType("int");
 
