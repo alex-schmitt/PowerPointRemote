@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Input;
+using PowerPointRemote.DesktopClient.Commands;
 
 namespace PowerPointRemote.DesktopClient.ViewModels
 {
@@ -9,16 +11,18 @@ namespace PowerPointRemote.DesktopClient.ViewModels
 
         public MainWindowViewModel(ChannelService channelService)
         {
-            var channelService1 = channelService;
 
-            channelService1.UserConnected += (sender, user) => AddUser(user);
-            channelService1.UserDisconnected += (sender, user) => RemoveUser(user);
-            channelService1.ChannelStarted += (sender, channelUri) => ChannelUri = channelUri;
+            channelService.UserConnected += (sender, user) => AddUser(user);
+            channelService.UserDisconnected += (sender, user) => RemoveUser(user);
+            channelService.ChannelStarted += (sender, channelUri) => ChannelUri = channelUri;
 
             ConnectedUsers = new ObservableCollection<User>();
+            NewChannelCommand = new NewChannelCommand(channelService);
         }
 
         public ObservableCollection<User> ConnectedUsers { get; }
+
+        public ICommand NewChannelCommand { get; }
 
 
         public string ChannelUri

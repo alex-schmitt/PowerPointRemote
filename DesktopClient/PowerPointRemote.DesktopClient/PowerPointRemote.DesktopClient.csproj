@@ -149,6 +149,7 @@
     </ApplicationDefinition>
     <Compile Include="Channel.cs" />
     <Compile Include="ChannelService.cs" />
+    <Compile Include="Commands\NewChannelCommand.cs" />
     <Compile Include="SlideShowDetail.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="SlideShowCommand.cs" />
