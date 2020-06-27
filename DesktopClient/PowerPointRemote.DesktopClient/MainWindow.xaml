@@ -13,8 +13,12 @@
             <RowDefinition Height="Auto" />
 
         </Grid.RowDefinitions>
-        <TextBox Grid.Row="0" Text="{Binding ChannelUri, Mode=OneWay}" IsReadOnly="True" />
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <TextBox x:Name="ChannelUri" Text="{Binding ChannelUri, Mode=OneWay}" IsReadOnly="True" />
+            <Button Content="Copy" Command="{Binding CopyTextBoxCommand}"
+                    CommandParameter="{Binding Text, ElementName=ChannelUri}" />
+        </StackPanel>
         <ListBox Grid.Row="1" ItemsSource="{Binding ConnectedUsers}" DisplayMemberPath="Name" />
-        <Button Grid.Row="2" Content="New Channel" Command="{Binding NewChannelCommand}" Height="32" Margin="5"/>
+        <Button Grid.Row="2" Content="New Channel" Command="{Binding NewChannelCommand}" Height="32" Margin="5" />
     </Grid>
 </Window>

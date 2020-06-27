@@ -26,7 +26,7 @@ namespace PowerPointRemote.DesktopClient.Commands
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 
             if (_channelService.State != HubConnectionState.Disconnected)
-               await _channelService.EndChannel();
+                await _channelService.EndChannel();
 
             await _channelService.StartChannel();
 

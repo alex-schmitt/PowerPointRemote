@@ -11,18 +11,20 @@ namespace PowerPointRemote.DesktopClient.ViewModels
 
         public MainWindowViewModel(ChannelService channelService)
         {
-
             channelService.UserConnected += (sender, user) => AddUser(user);
             channelService.UserDisconnected += (sender, user) => RemoveUser(user);
             channelService.ChannelStarted += (sender, channelUri) => ChannelUri = channelUri;
 
             ConnectedUsers = new ObservableCollection<User>();
             NewChannelCommand = new NewChannelCommand(channelService);
+            CopyTextBoxCommand = new CopyTextCommand();
         }
 
         public ObservableCollection<User> ConnectedUsers { get; }
 
         public ICommand NewChannelCommand { get; }
+
+        public ICommand CopyTextBoxCommand { get; }
 
 
         public string ChannelUri
