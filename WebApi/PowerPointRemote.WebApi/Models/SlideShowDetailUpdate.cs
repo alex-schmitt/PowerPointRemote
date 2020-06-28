@@ -2,7 +2,7 @@
 
 namespace PowerPointRemote.WebApi.Models
 {
-    public class SlideShowDetail
+    public class SlideShowDetailUpdate
     {
         public bool SlideShowEnabled { get; set; }
         public string SlideShowName { get; set; }

@@ -54,17 +54,20 @@ namespace PowerPointRemote.WebApi.Hubs
             await _userHubContext.SendHostDisconnected(await GetUserConnections(channelId));
         }
 
-        public async Task UpdateSlideShowDetail(SlideShowDetail slideShowDetail)
+        public async Task UpdateSlideShowDetail(SlideShowDetailUpdate slideShowDetailUpdate)
         {
             var channelId = Context.User.FindFirst("ChannelId").Value;
-            await _userHubContext.SendSlideShowDetail(await GetUserConnections(channelId), slideShowDetail);
 
-            var channel = await _applicationDbContext.Channels.FindAsync(channelId);
-            channel.SlideShowEnabled = slideShowDetail.SlideShowEnabled;
-            channel.SlideShowName = slideShowDetail.SlideShowName;
-            channel.CurrentSlide = slideShowDetail.CurrentSlide;
-            channel.TotalSlides = slideShowDetail.TotalSlides;
-            channel.LastUpdate = slideShowDetail.Timestamp;
+            await _userHubContext.SendSlideShowDetail(await GetUserConnections(channelId), slideShowDetailUpdate);
+
+            var slideShowDetail =
+                await _applicationDbContext.SlideShowDetail.SingleOrDefaultAsync(ssd => ssd.ChannelId == channelId);
+
+            slideShowDetail.Enabled = slideShowDetailUpdate.SlideShowEnabled;
+            slideShowDetail.Name = slideShowDetailUpdate.SlideShowName;
+            slideShowDetail.CurrentSlide = slideShowDetailUpdate.CurrentSlide;
+            slideShowDetail.TotalSlides = slideShowDetailUpdate.TotalSlides;
+            slideShowDetail.LastUpdate = slideShowDetailUpdate.Timestamp;
 
             await _applicationDbContext.SaveChangesAsync();
         }

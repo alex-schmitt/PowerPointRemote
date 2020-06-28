@@ -25,9 +25,6 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 b.Property<bool>("ChannelEnded")
                     .HasColumnType("tinyint(1)");
 
-                b.Property<int>("CurrentSlide")
-                    .HasColumnType("int");
-
                 b.Property<string>("HostConnectionId")
                     .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
                     .HasMaxLength(255);
@@ -35,10 +32,30 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 b.Property<DateTime>("LastUpdate")
                     .HasColumnType("datetime(6)");
 
-                b.Property<bool>("SlideShowEnabled")
+                b.HasKey("Id");
+
+                b.ToTable("Channels");
+            });
+
+            modelBuilder.Entity("PowerPointRemote.WebApi.Models.Entity.SlideShowDetail", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
+
+                b.Property<string>("ChannelId")
+                    .HasColumnType("char(9)");
+
+                b.Property<int>("CurrentSlide")
+                    .HasColumnType("int");
+
+                b.Property<bool>("Enabled")
                     .HasColumnType("tinyint(1)");
 
-                b.Property<string>("SlideShowName")
+                b.Property<DateTime>("LastUpdate")
+                    .HasColumnType("datetime(6)");
+
+                b.Property<string>("Name")
                     .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                 b.Property<int>("TotalSlides")
@@ -46,7 +63,10 @@ namespace PowerPointRemote.WebApi.Data.Migrations
 
                 b.HasKey("Id");
 
-                b.ToTable("Channels");
+                b.HasIndex("ChannelId")
+                    .IsUnique();
+
+                b.ToTable("SlideShowDetail");
             });
 
             modelBuilder.Entity("PowerPointRemote.WebApi.Models.Entity.User", b =>
@@ -89,6 +109,13 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 b.HasIndex("UserId");
 
                 b.ToTable("UserConnections");
+            });
+
+            modelBuilder.Entity("PowerPointRemote.WebApi.Models.Entity.SlideShowDetail", b =>
+            {
+                b.HasOne("PowerPointRemote.WebApi.Models.Entity.Channel", "Channel")
+                    .WithOne("SlideShowDetail")
+                    .HasForeignKey("PowerPointRemote.WebApi.Models.Entity.SlideShowDetail", "ChannelId");
             });
 
             modelBuilder.Entity("PowerPointRemote.WebApi.Models.Entity.User", b =>

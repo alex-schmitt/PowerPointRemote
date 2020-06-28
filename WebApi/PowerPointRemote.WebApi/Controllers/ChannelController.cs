@@ -27,15 +27,24 @@ namespace PowerPointRemote.WebApi.Controllers
         [HttpPost("create-channel")]
         public async Task<ActionResult> CreateChannel()
         {
+            var channelId = RandomBase16(9);
+            var now = DateTime.Now;
+
             var channel = new Channel
             {
-                Id = RandomBase16(9)
+                Id = channelId,
+                LastUpdate = now,
+                SlideShowDetail = new SlideShowDetail
+                {
+                    ChannelId = channelId,
+                    LastUpdate = now
+                }
             };
 
             await _applicationDbContext.Channels.AddAsync(channel);
             await _applicationDbContext.SaveChangesAsync();
 
-            return Ok(new {AccessToken = CreateHostAccessToken(channel.Id), ChannelId = channel.Id});
+            return Ok(new {AccessToken = CreateHostAccessToken(channelId), ChannelId = channelId});
         }
 
         [HttpPost("join-channel")]

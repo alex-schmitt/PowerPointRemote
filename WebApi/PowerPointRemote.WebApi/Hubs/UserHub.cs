@@ -85,23 +85,25 @@ namespace PowerPointRemote.WebApi.Hubs
             return new HubActionResult(HttpStatusCode.OK);
         }
 
-        public async Task<HubActionResult> GetSlideShowMeta()
+        public async Task<HubActionResult> GetSlideShowDetail()
         {
             var channelId = Context.User.FindFirst("ChannelId").Value;
-            var channel = await _applicationDbContext.Channels.FindAsync(channelId);
 
-            if (channel == null) return new HubActionResult(HttpStatusCode.NotFound);
+            var slideShowDetail =
+                await _applicationDbContext.SlideShowDetail.SingleOrDefaultAsync(ssd => ssd.ChannelId == channelId);
 
-            var slideShowMeta = new SlideShowDetail
+            if (slideShowDetail == null) return new HubActionResult(HttpStatusCode.NotFound);
+
+            var slideShowDetailUpdate = new SlideShowDetailUpdate
             {
-                SlideShowEnabled = channel.SlideShowEnabled,
-                SlideShowName = channel.SlideShowName,
-                CurrentSlide = channel.CurrentSlide,
-                TotalSlides = channel.TotalSlides,
-                Timestamp = channel.LastUpdate
+                SlideShowEnabled = slideShowDetail.Enabled,
+                SlideShowName = slideShowDetail.Name,
+                CurrentSlide = slideShowDetail.CurrentSlide,
+                TotalSlides = slideShowDetail.TotalSlides,
+                Timestamp = slideShowDetail.LastUpdate
             };
 
-            return new HubActionResult(HttpStatusCode.OK, slideShowMeta);
+            return new HubActionResult(HttpStatusCode.OK, slideShowDetailUpdate);
         }
 
         private async Task<string> GetHostConnectionIdAsync(string channelId)
