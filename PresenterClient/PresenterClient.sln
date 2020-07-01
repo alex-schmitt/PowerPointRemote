@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresenterClient", "Presente
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresenterClient.SignalR", "PresenterClient.SignalR\PresenterClient.SignalR.csproj", "{A81C2D1A-085C-4A6A-B474-A4297928054F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresenterClient.Common", "PresenterClient.Common\PresenterClient.Common.csproj", "{6D44519F-1EAD-4B47-A3FA-77975A6B563D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{A81C2D1A-085C-4A6A-B474-A4297928054F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A81C2D1A-085C-4A6A-B474-A4297928054F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A81C2D1A-085C-4A6A-B474-A4297928054F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D44519F-1EAD-4B47-A3FA-77975A6B563D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D44519F-1EAD-4B47-A3FA-77975A6B563D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D44519F-1EAD-4B47-A3FA-77975A6B563D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D44519F-1EAD-4B47-A3FA-77975A6B563D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

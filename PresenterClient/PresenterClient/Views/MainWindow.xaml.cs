@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using PresenterClient.SignalR;
 using Prism.Ioc;
 using Prism.Regions;
 
@@ -16,15 +17,20 @@ namespace PresenterClient.Views
         {
             _container = container;
             _regionManager = regionManager;
+
             InitializeComponent();
+
+            _container.RegisterSingleton<IChannelService, ChannelService>();
 
             Loaded += OnLoaded;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        private async void OnLoaded(object sender, RoutedEventArgs e)
         {
             var region = _regionManager.Regions["MainRegion"];
             region.Add(_container.Resolve<ConnectionDetailView>());
+
+            await _container.Resolve<IChannelService>().StartChannel();
         }
     }
 }
