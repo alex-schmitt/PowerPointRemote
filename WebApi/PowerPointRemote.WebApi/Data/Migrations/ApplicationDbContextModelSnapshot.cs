@@ -32,6 +32,9 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 b.Property<DateTime>("LastUpdate")
                     .HasColumnType("datetime(6)");
 
+                b.Property<string>("Name")
+                    .HasColumnType("longtext CHARACTER SET utf8mb4");
+
                 b.HasKey("Id");
 
                 b.ToTable("Channels");
