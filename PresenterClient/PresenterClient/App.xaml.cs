@@ -1,12 +1,11 @@
-﻿using PresenterClient.Views;
+﻿using System.Windows;
+using PresenterClient.Views;
 using Prism.Ioc;
-using Prism.Modularity;
-using System.Windows;
 
 namespace PresenterClient
 {
     /// <summary>
-    /// Interaction logic for App.xaml
+    ///     Interaction logic for App.xaml
     /// </summary>
     public partial class App
     {
@@ -17,7 +16,6 @@ namespace PresenterClient
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-
         }
     }
 }
