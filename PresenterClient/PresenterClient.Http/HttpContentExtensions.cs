@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace PresenterClient.SignalR.Extensions
+namespace PresenterClient.Http.Extensions
 {
     public static class HttpContentExtensions
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace PresenterClient.SignalR
+namespace PresenterClient.SignalR.Messages
 {
-    public class User
+    public class RemoteUser
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

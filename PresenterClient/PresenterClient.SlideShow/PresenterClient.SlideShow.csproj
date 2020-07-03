@@ -41,8 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ISlideShowWindowService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SlideShowWindowTracker.cs" />
+    <Compile Include="SlideShowWindowService.cs" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">

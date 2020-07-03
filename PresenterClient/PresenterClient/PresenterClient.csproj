@@ -56,7 +56,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Views\ConnectionDetailView.xaml">
+    <Page Include="Views\ChannelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -68,11 +68,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Constants.cs" />
-    <Compile Include="ViewModels\ConnectionDetailViewModel.cs" />
+    <Compile Include="Services\IPowerPointService.cs" />
+    <Compile Include="Services\ISignalRService.cs" />
+    <Compile Include="Services\SignalRService.cs" />
+    <Compile Include="Services\PowerPointService.cs" />
+    <Compile Include="ViewModels\ChannelViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="Views\ConnectionDetailView.xaml.cs">
-      <DependentUpon>ConnectionDetailView.xaml</DependentUpon>
+    <Compile Include="Views\ChannelView.xaml.cs">
+      <DependentUpon>ChannelView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -110,10 +113,44 @@
       <Project>{6d44519f-1ead-4b47-a3fa-77975a6b563d}</Project>
       <Name>PresenterClient.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PresenterClient.Http\PresenterClient.Http.csproj">
+      <Project>{6397788f-45f4-461f-9a6d-7d6d4ad6100e}</Project>
+      <Name>PresenterClient.Http</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PresenterClient.SignalR\PresenterClient.SignalR.csproj">
       <Project>{a81c2d1a-085c-4a6a-b474-a4297928054f}</Project>
       <Name>PresenterClient.SignalR</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.PowerPoint">
+      <Guid>{91493440-5A91-11CF-8700-00AA0060263B}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>12</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

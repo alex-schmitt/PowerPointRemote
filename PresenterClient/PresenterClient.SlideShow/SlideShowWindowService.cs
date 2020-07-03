@@ -4,7 +4,7 @@ using Microsoft.Office.Interop.PowerPoint;
 
 namespace PresenterClient.SlideShow
 {
-    public class SlideShowWindowTracker
+    public class SlideShowWindowService : ISlideShowWindowService
     {
         private readonly Application _application;
 
@@ -14,7 +14,7 @@ namespace PresenterClient.SlideShow
         ///     Tracks the last active SlideShowWindow for a given PowerPoint application.
         /// </summary>
         /// <param name="application"></param>
-        public SlideShowWindowTracker(Application application)
+        public SlideShowWindowService(Application application)
         {
             _application = application;
 

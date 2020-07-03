@@ -31,7 +31,7 @@ namespace PowerPointRemote.WebApi.Extensions
             SlideShowCommand slideShowCommand)
         {
             return hubContext.Clients.Client(hostConnectionId)
-                .SendAsync("SlideShowCommand", slideShowCommand);
+                .SendAsync("SlideShowActionReceived", slideShowCommand);
         }
 
         #endregion

@@ -1,6 +1,6 @@
-﻿using System.Windows;
-using PresenterClient.SignalR;
-using Prism.Ioc;
+﻿using System.ComponentModel;
+using System.Windows;
+using PresenterClient.Services;
 using Prism.Regions;
 
 namespace PresenterClient.Views
@@ -10,27 +10,41 @@ namespace PresenterClient.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly IContainerExtension _container;
+        private readonly ChannelView _channelView;
+        private readonly IPowerPointService _powerPointService;
         private readonly IRegionManager _regionManager;
+        private readonly ISignalRService _signalRService;
 
-        public MainWindow(IContainerExtension container, IRegionManager regionManager)
+        public MainWindow(ChannelView channelView, IRegionManager regionManager, ISignalRService signalRService,
+            IPowerPointService powerPointService)
         {
-            _container = container;
+            _channelView = channelView;
             _regionManager = regionManager;
+            _signalRService = signalRService;
+            _powerPointService = powerPointService;
 
             InitializeComponent();
 
-            _container.RegisterSingleton<IChannelService, ChannelService>();
-
             Loaded += OnLoaded;
+            Closing += OnClosing;
         }
 
-        private async void OnLoaded(object sender, RoutedEventArgs e)
+        private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            var region = _regionManager.Regions["MainRegion"];
-            region.Add(_container.Resolve<ConnectionDetailView>());
+            _regionManager.Regions["MainRegion"].Add(_channelView);
+        }
 
-            await _container.Resolve<IChannelService>().StartChannel();
+        private async void OnClosing(object sender, CancelEventArgs e)
+        {
+            Hide();
+            _powerPointService.Dispose();
+
+            if (_signalRService.IsDisposed) return;
+
+            // Prevents deadlock 
+            e.Cancel = true;
+            await _signalRService.DisposeAsync();
+            Close();
         }
     }
 }
