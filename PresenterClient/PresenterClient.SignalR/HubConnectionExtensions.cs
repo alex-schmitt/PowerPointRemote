@@ -28,5 +28,15 @@ namespace PresenterClient.SignalR
         {
             hubConnection.On(ClientMethods.SlideShowActionReceived, action);
         }
+
+        public static void OnUserConnected(this HubConnection hubConnection, Action<ChannelUser> action)
+        {
+            hubConnection.On(ClientMethods.UserConnected, action);
+        }
+
+        public static void OnUserDisconnected(this HubConnection hubConnection, Action<ChannelUser> action)
+        {
+            hubConnection.On(ClientMethods.UserDisconnected, action);
+        }
     }
 }

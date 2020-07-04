@@ -3,11 +3,11 @@
 namespace PresenterClient.Views
 {
     /// <summary>
-    ///     Interaction logic for ChannelView
+    ///     Interaction logic for ChannelUsersView
     /// </summary>
-    public partial class ChannelView : UserControl
+    public partial class ChannelUsersView : UserControl
     {
-        public ChannelView()
+        public ChannelUsersView()
         {
             InitializeComponent();
         }

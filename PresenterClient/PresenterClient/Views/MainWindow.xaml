@@ -5,6 +5,6 @@
         prism:ViewModelLocator.AutoWireViewModel="True"
         Title="{Binding Title}" Height="450" Width="300">
     <Grid>
-        <ContentControl prism:RegionManager.RegionName="MainRegion" />
+        <ItemsControl prism:RegionManager.RegionName="MainRegion" />
     </Grid>
 </Window>

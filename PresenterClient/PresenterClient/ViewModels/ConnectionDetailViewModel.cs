@@ -5,11 +5,11 @@ using Prism.Mvvm;
 
 namespace PresenterClient.ViewModels
 {
-    public class ChannelViewModel : BindableBase
+    public class ConnectionDetailViewModel : BindableBase
     {
         private string _uri;
 
-        public ChannelViewModel(ISignalRService signalRService)
+        public ConnectionDetailViewModel(ISignalRService signalRService)
         {
             signalRService.Started += SignalRServiceOnStarted;
         }

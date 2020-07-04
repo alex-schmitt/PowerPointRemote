@@ -10,15 +10,19 @@ namespace PresenterClient.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly ChannelView _channelView;
+        private readonly ChannelUsersView _channelUsersView;
+        private readonly ConnectionDetailView _connectionDetailView;
         private readonly IPowerPointService _powerPointService;
         private readonly IRegionManager _regionManager;
         private readonly ISignalRService _signalRService;
 
-        public MainWindow(ChannelView channelView, IRegionManager regionManager, ISignalRService signalRService,
+        public MainWindow(ConnectionDetailView connectionDetailView, ChannelUsersView channelUsersView,
+            IRegionManager regionManager,
+            ISignalRService signalRService,
             IPowerPointService powerPointService)
         {
-            _channelView = channelView;
+            _connectionDetailView = connectionDetailView;
+            _channelUsersView = channelUsersView;
             _regionManager = regionManager;
             _signalRService = signalRService;
             _powerPointService = powerPointService;
@@ -31,7 +35,8 @@ namespace PresenterClient.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            _regionManager.Regions["MainRegion"].Add(_channelView);
+            _regionManager.Regions["MainRegion"].Add(_connectionDetailView);
+            _regionManager.Regions["MainRegion"].Add(_channelUsersView);
         }
 
         private async void OnClosing(object sender, CancelEventArgs e)

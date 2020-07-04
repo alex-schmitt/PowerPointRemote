@@ -2,7 +2,7 @@
 
 namespace PresenterClient.SignalR.Messages
 {
-    public class RemoteUser
+    public class ChannelUser
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
