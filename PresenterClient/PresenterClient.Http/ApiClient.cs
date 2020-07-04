@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using PresenterClient.Common;
-using PresenterClient.Http.Extensions;
 using PresenterClient.Http.Response;
 
 namespace PresenterClient.Http

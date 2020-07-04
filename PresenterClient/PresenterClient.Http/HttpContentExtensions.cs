@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace PresenterClient.Http.Extensions
+namespace PresenterClient.Http
 {
     public static class HttpContentExtensions
     {
