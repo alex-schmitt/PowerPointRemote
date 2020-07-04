@@ -6,7 +6,7 @@ namespace PresenterClient.Services
 {
     public interface ISignalRService : IAsyncDisposable
     {
-        bool IsDisposed { get; }
+        bool IsStarted { get; }
         string ChannelId { get; }
         HubConnection HubConnection { get; }
         event EventHandler Started;

@@ -56,6 +56,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Views\ChannelControlsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ChannelUsersView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -76,9 +80,13 @@
     <Compile Include="Services\ISignalRService.cs" />
     <Compile Include="Services\SignalRService.cs" />
     <Compile Include="Services\PowerPointService.cs" />
+    <Compile Include="ViewModels\ChannelControlsViewModel.cs" />
     <Compile Include="ViewModels\ChannelUsersViewModel.cs" />
     <Compile Include="ViewModels\ConnectionDetailViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="Views\ChannelControlsView.xaml.cs">
+      <DependentUpon>ChannelControlsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ChannelUsersView.xaml.cs">
       <DependentUpon>ChannelUsersView.xaml</DependentUpon>
     </Compile>

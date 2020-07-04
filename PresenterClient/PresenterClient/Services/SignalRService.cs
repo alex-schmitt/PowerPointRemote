@@ -9,7 +9,7 @@ namespace PresenterClient.Services
 {
     public class SignalRService : ISignalRService
     {
-        public bool IsDisposed { get; private set; }
+        public bool IsStarted { get; private set; }
         public string ChannelId { get; private set; }
         public HubConnection HubConnection { get; private set; }
 
@@ -28,28 +28,29 @@ namespace PresenterClient.Services
             HubConnection = await HubConnectionBuilder.BuildAsync(channel.AccessToken);
             await HubConnection.StartAsync();
 
+            IsStarted = true;
             Started?.Invoke(this, EventArgs.Empty);
         }
 
         public async Task StopAsync()
         {
-            if (HubConnection != null)
-            {
-                await HubConnection.SendChannelEndedAsync();
-                await HubConnection.StopAsync();
-            }
+            if (!IsStarted)
+                return;
 
+            await HubConnection.SendChannelEndedAsync();
+            await HubConnection.DisposeAsync();
+            HubConnection = null;
+
+            IsStarted = false;
             Stopped?.Invoke(this, EventArgs.Empty);
         }
 
         public async ValueTask DisposeAsync()
         {
-            if (HubConnection == null)
+            if (!IsStarted)
                 return;
 
             await StopAsync();
-            await HubConnection.DisposeAsync();
-            IsDisposed = true;
         }
     }
 }

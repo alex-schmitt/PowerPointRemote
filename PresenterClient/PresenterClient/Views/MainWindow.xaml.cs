@@ -10,19 +10,23 @@ namespace PresenterClient.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly ChannelControlsView _channelControlsView;
         private readonly ChannelUsersView _channelUsersView;
         private readonly ConnectionDetailView _connectionDetailView;
         private readonly IPowerPointService _powerPointService;
         private readonly IRegionManager _regionManager;
         private readonly ISignalRService _signalRService;
 
-        public MainWindow(ConnectionDetailView connectionDetailView, ChannelUsersView channelUsersView,
+        public MainWindow(ConnectionDetailView connectionDetailView,
+            ChannelUsersView channelUsersView,
+            ChannelControlsView channelControlsView,
             IRegionManager regionManager,
             ISignalRService signalRService,
             IPowerPointService powerPointService)
         {
             _connectionDetailView = connectionDetailView;
             _channelUsersView = channelUsersView;
+            _channelControlsView = channelControlsView;
             _regionManager = regionManager;
             _signalRService = signalRService;
             _powerPointService = powerPointService;
@@ -37,6 +41,7 @@ namespace PresenterClient.Views
         {
             _regionManager.Regions["MainRegion"].Add(_connectionDetailView);
             _regionManager.Regions["MainRegion"].Add(_channelUsersView);
+            _regionManager.Regions["ControlsRegion"].Add(_channelControlsView);
         }
 
         private async void OnClosing(object sender, CancelEventArgs e)
@@ -44,7 +49,7 @@ namespace PresenterClient.Views
             Hide();
             _powerPointService.Dispose();
 
-            if (_signalRService.IsDisposed) return;
+            if (!_signalRService.IsStarted) return;
 
             // Prevents deadlock 
             e.Cancel = true;
