@@ -4,6 +4,20 @@
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True">
     <Grid>
-        <TextBox Text="{Binding Uri, Mode=OneWay}" IsReadOnly="True" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Label FontSize="14" Content="Remote URL" HorizontalAlignment="Center" Margin="0 0 0 -5" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <TextBox FontSize="14" Text="{Binding Uri, Mode=OneWay}" IsReadOnly="True" Padding="5"
+                     Width="250" Margin="18 5" />
+            <Button Width="24" Height="24" Margin="-66 0 0 0" Background="Transparent" BorderThickness="0"
+                    Command="{Binding CopyUriCommand}">
+                <Image Source="../Resources/copy.png" />
+            </Button>
+        </StackPanel>
     </Grid>
 </UserControl>

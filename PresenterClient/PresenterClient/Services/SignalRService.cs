@@ -17,19 +17,28 @@ namespace PresenterClient.Services
 
         public event EventHandler Stopped;
 
+        public event EventHandler<string> StartFailure;
+
         public async Task StartAsync()
         {
             if (HubConnection != null)
                 throw new InvalidOperationException("The previous channel must be stopped first.");
 
-            var channel = await ApiClient.CreateChannel();
-            ChannelId = channel.ChannelId;
+            try
+            {
+                var channel = await ApiClient.CreateChannel();
+                ChannelId = channel.ChannelId;
 
-            HubConnection = await HubConnectionBuilder.BuildAsync(channel.AccessToken);
-            await HubConnection.StartAsync();
+                HubConnection = await HubConnectionBuilder.BuildAsync(channel.AccessToken);
+                await HubConnection.StartAsync();
 
-            IsStarted = true;
-            Started?.Invoke(this, EventArgs.Empty);
+                IsStarted = true;
+                Started?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception)
+            {
+                StartFailure?.Invoke(this, "Unable to connected");
+            }
         }
 
         public async Task StopAsync()
@@ -37,7 +46,15 @@ namespace PresenterClient.Services
             if (!IsStarted)
                 return;
 
-            await HubConnection.SendChannelEndedAsync();
+            try
+            {
+                await HubConnection.SendChannelEndedAsync();
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
             await HubConnection.DisposeAsync();
             HubConnection = null;
 

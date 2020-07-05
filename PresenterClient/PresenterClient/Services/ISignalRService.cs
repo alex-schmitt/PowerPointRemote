@@ -11,6 +11,7 @@ namespace PresenterClient.Services
         HubConnection HubConnection { get; }
         event EventHandler Started;
         event EventHandler Stopped;
+        event EventHandler<string> StartFailure;
         Task StartAsync();
         Task StopAsync();
     }
