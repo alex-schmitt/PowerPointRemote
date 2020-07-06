@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="450" Width="300"
+        Title="{Binding Title}" Height="435" Width="300"
         ResizeMode="NoResize">
     <Window.Resources>
         <Style TargetType="{x:Type TextBox}">

@@ -4,6 +4,7 @@
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True">
     <Grid>
-        <Button Content="New Channel" Command="{Binding NewChannelCommand}" />
+        <Button FontSize="14" Content="New Channel" Command="{Binding NewChannelCommand}" Background="Transparent"
+                HorizontalAlignment="Right" Margin="0 0 18 18" Padding="16 8" BorderThickness=".5" />
     </Grid>
 </UserControl>

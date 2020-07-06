@@ -6,14 +6,12 @@
     <Grid Margin="0 15 0 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Label FontSize="14" Content="Connections" HorizontalAlignment="Center" />
-        <Label Grid.Row="1" Visibility="{Binding WaitingVisibility}" Content="Waiting for users to connect"
-               HorizontalAlignment="Center" />
-        <ListBox Grid.Row="2" ItemsSource="{Binding ChannelUsers}" DisplayMemberPath="Name" BorderThickness="0"
-                 Margin="18 2" />
+        <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness=".5" CornerRadius="3" Margin="18 0" Height="215">
+            <ListBox ItemsSource="{Binding ChannelUsers}" DisplayMemberPath="Name" BorderThickness="0"
+                     Margin="2" FontSize="14" />
+        </Border>
     </Grid>
 </UserControl>
