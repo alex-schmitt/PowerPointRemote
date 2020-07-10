@@ -75,6 +75,9 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                     .IsRequired()
                     .HasColumnType("char(9)");
 
+                b.Property<int>("Connections")
+                    .HasColumnType("int");
+
                 b.Property<string>("Name")
                     .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
                     .HasMaxLength(255);
@@ -84,27 +87,6 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 b.HasIndex("ChannelId");
 
                 b.ToTable("Users");
-            });
-
-            modelBuilder.Entity("PowerPointRemote.WebApi.Models.Entity.UserConnection", b =>
-            {
-                b.Property<string>("Id")
-                    .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
-
-                b.Property<string>("ChannelId")
-                    .IsRequired()
-                    .HasColumnType("char(9)");
-
-                b.Property<Guid>("UserId")
-                    .HasColumnType("char(36)");
-
-                b.HasKey("Id");
-
-                b.HasIndex("ChannelId");
-
-                b.HasIndex("UserId");
-
-                b.ToTable("UserConnections");
             });
 
             modelBuilder.Entity("PowerPointRemote.WebApi.Models.Entity.SlideShowDetail", b =>
@@ -119,21 +101,6 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 b.HasOne("PowerPointRemote.WebApi.Models.Entity.Channel", "Channel")
                     .WithMany("Users")
                     .HasForeignKey("ChannelId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
-
-            modelBuilder.Entity("PowerPointRemote.WebApi.Models.Entity.UserConnection", b =>
-            {
-                b.HasOne("PowerPointRemote.WebApi.Models.Entity.Channel", "Channel")
-                    .WithMany()
-                    .HasForeignKey("ChannelId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-
-                b.HasOne("PowerPointRemote.WebApi.Models.Entity.User", "User")
-                    .WithMany("Connections")
-                    .HasForeignKey("UserId")
                     .OnDelete(DeleteBehavior.Cascade)
                     .IsRequired();
             });

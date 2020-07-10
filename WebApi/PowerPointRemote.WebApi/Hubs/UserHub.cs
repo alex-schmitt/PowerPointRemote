@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -9,7 +7,6 @@ using PowerPointRemote.WebAPI.Data;
 using PowerPointRemote.WebAPI.Data.Repositories;
 using PowerPointRemote.WebApi.Extensions;
 using PowerPointRemote.WebApi.Models;
-using PowerPointRemote.WebApi.Models.Entity;
 
 namespace PowerPointRemote.WebApi.Hubs
 {
@@ -29,49 +26,39 @@ namespace PowerPointRemote.WebApi.Hubs
 
         public override async Task OnConnectedAsync()
         {
+            var userId = Guid.Parse(Context.User.Identity.Name ?? string.Empty);
             var channelId = Context.User.FindFirst("ChannelId").Value;
-            await Groups.AddToGroupAsync(Context.ConnectionId, channelId);
 
-
-            var userId = Guid.Parse(Context.User.Identity.Name);
-            var user = await _applicationDbContext.Users.Include(u => u.Connections)
-                .SingleOrDefaultAsync(u => u.Id == userId);
-
-            if (user.Connections == null)
-                user.Connections = new List<UserConnection>();
-
-            user.Connections.Add(new UserConnection
-            {
-                Id = Context.ConnectionId,
-                ChannelId = user.ChannelId
-            });
-
-            await _applicationDbContext.SaveChangesAsync();
+            var user = await _applicationDbContext.Users.SingleOrDefaultAsync(u => u.Id == userId);
+            user.Connections++;
 
             var hostConnectionId = _hostConnectionRepository.GetConnection(channelId);
-            if (user.Connections.Count == 1 && hostConnectionId != null)
+            if (user.Connections == 1 && hostConnectionId != null)
                 await _hostHubContext.SendUserConnected(hostConnectionId, user.Id, user.Name);
+
+            await _applicationDbContext.SaveChangesAsync();
+            await Groups.AddToGroupAsync(Context.ConnectionId, channelId);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var userId = Guid.Parse(Context.User.Identity.Name);
+            var userId = Guid.Parse(Context.User.Identity.Name ?? string.Empty);
             var channelId = Context.User.FindFirst("ChannelId").Value;
 
-            var usersConnectionCount =
-                await _applicationDbContext.UserConnections.Where(uc => uc.UserId == userId).CountAsync();
+            var user = await _applicationDbContext.Users.SingleOrDefaultAsync(u => u.Id == userId);
+            user.Connections--;
 
             var hostConnectionId = _hostConnectionRepository.GetConnection(channelId);
-            if (usersConnectionCount == 1 && hostConnectionId != null)
+            if (user.Connections == 0 && hostConnectionId != null)
                 await _hostHubContext.SendUserDisconnected(hostConnectionId, userId);
 
-            _applicationDbContext.UserConnections.Remove(new UserConnection {Id = Context.ConnectionId});
             await _applicationDbContext.SaveChangesAsync();
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, channelId);
         }
 
         public async Task<HubActionResult> SendSlideShowCommand(byte code)
         {
-            var userId = Guid.Parse(Context.User.Identity.Name);
+            var userId = Guid.Parse(Context.User.Identity.Name ?? string.Empty);
             var channelId = Context.User.FindFirst("ChannelId").Value;
             var hostConnectionId = _hostConnectionRepository.GetConnection(channelId);
 
