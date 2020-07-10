@@ -29,8 +29,10 @@ namespace PowerPointRemote.WebApi.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            var userId = Guid.Parse(Context.User.Identity.Name);
             var channelId = Context.User.FindFirst("ChannelId").Value;
+            await Groups.AddToGroupAsync(Context.ConnectionId, channelId);
+
+            var userId = Guid.Parse(Context.User.Identity.Name);
             var hostConnectionId = await GetHostConnectionIdAsync(channelId);
 
             var user = await _applicationDbContext.Users.Include(u => u.Connections)

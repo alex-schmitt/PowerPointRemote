@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +6,6 @@ using Microsoft.Extensions.Caching.Memory;
 using PowerPointRemote.WebAPI.Data;
 using PowerPointRemote.WebApi.Extensions;
 using PowerPointRemote.WebApi.Models;
-using PowerPointRemote.WebApi.Models.Entity;
 
 namespace PowerPointRemote.WebApi.Hubs
 {
@@ -35,7 +32,7 @@ namespace PowerPointRemote.WebApi.Hubs
 
             _memoryCache.Set(channelId, Context.ConnectionId);
 
-            await _userHubContext.SendHostConnected(await GetUserConnections(channelId));
+            await _userHubContext.SendHostConnected(channelId);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
@@ -51,14 +48,14 @@ namespace PowerPointRemote.WebApi.Hubs
 
             _memoryCache.Remove(channelId);
 
-            await _userHubContext.SendHostDisconnected(await GetUserConnections(channelId));
+            await _userHubContext.SendHostDisconnected(channelId);
         }
 
         public async Task UpdateSlideShowDetail(SlideShowDetailUpdate slideShowDetailUpdate)
         {
             var channelId = Context.User.FindFirst("ChannelId").Value;
 
-            await _userHubContext.SendSlideShowDetail(await GetUserConnections(channelId), slideShowDetailUpdate);
+            await _userHubContext.SendSlideShowDetail(channelId, slideShowDetailUpdate);
 
             var slideShowDetail =
                 await _applicationDbContext.SlideShowDetail.SingleOrDefaultAsync(ssd => ssd.ChannelId == channelId);
@@ -72,17 +69,6 @@ namespace PowerPointRemote.WebApi.Hubs
             await _applicationDbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateChannelName(string channelName)
-        {
-            var channelId = Context.User.FindFirst("ChannelId").Value;
-
-            await _userHubContext.SendChannelName(await GetUserConnections(channelId), channelName);
-
-            var channel = await _applicationDbContext.Channels.FindAsync(channelId);
-            channel.Name = channelName;
-            await _applicationDbContext.SaveChangesAsync();
-        }
-
         public async Task EndChannel()
         {
             var channelId = Context.User.FindFirst("ChannelId").Value;
@@ -93,13 +79,7 @@ namespace PowerPointRemote.WebApi.Hubs
 
             await _applicationDbContext.SaveChangesAsync();
 
-            await _userHubContext.SendChannelEnded(await GetUserConnections(channelId));
-        }
-
-        private Task<List<UserConnection>> GetUserConnections(string channelId)
-        {
-            return _applicationDbContext.UserConnections.AsNoTracking()
-                .Where(conn => conn.ChannelId == channelId).ToListAsync();
+            await _userHubContext.SendChannelEnded(channelId);
         }
     }
 }

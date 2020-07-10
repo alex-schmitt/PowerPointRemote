@@ -8,7 +8,7 @@ namespace PowerPointRemote.WebApi.Models.Entity
         public string Id { get; set; }
 
         public string HostConnectionId { get; set; }
-        
+
         public string Name { get; set; }
 
         public bool ChannelEnded { get; set; }

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using PowerPointRemote.WebApi.Hubs;
 using PowerPointRemote.WebApi.Models;
-using PowerPointRemote.WebApi.Models.Entity;
 
 namespace PowerPointRemote.WebApi.Extensions
 {
@@ -38,46 +35,25 @@ namespace PowerPointRemote.WebApi.Extensions
 
         #region UserHub
 
-        public static Task SendAllUsers(this IHubContext<UserHub> hubContext,
-            IEnumerable<UserConnection> userConnections, string method, object[] args = null)
+        public static Task SendHostDisconnected(this IHubContext<UserHub> hubContext, string channelId)
         {
-            if (args == null)
-                args = Array.Empty<object>();
-
-            return Task.WhenAll(userConnections
-                .Select(conn => hubContext.Clients.Client(conn.Id).SendCoreAsync(method, args)).ToList());
+            return hubContext.Clients.Group(channelId).SendAsync("HostDisconnected");
         }
 
-        public static Task SendHostDisconnected(this IHubContext<UserHub> hubContext,
-            IEnumerable<UserConnection> userConnections)
+        public static Task SendHostConnected(this IHubContext<UserHub> hubContext, string channelId)
         {
-            return hubContext.SendAllUsers(userConnections, "HostDisconnected");
+            return hubContext.Clients.Group(channelId).SendAsync("HostConnected");
         }
 
-        public static Task SendHostConnected(this IHubContext<UserHub> hubContext,
-            IEnumerable<UserConnection> userConnections)
+        public static Task SendChannelEnded(this IHubContext<UserHub> hubContext, string channelId)
         {
-            return hubContext.SendAllUsers(userConnections, "HostConnected");
-        }
-
-        public static Task SendChannelEnded(this IHubContext<UserHub> hubContext,
-            IEnumerable<UserConnection> userConnections)
-        {
-            return hubContext.SendAllUsers(userConnections, "ChannelEnded");
+            return hubContext.Clients.Group(channelId).SendAsync("ChannelEnded");
         }
 
         public static Task SendSlideShowDetail(this IHubContext<UserHub> hubContext,
-            IEnumerable<UserConnection> userConnections, SlideShowDetailUpdate slideShowDetailUpdate)
+            string channelId, SlideShowDetailUpdate slideShowDetailUpdate)
         {
-            return hubContext.SendAllUsers(userConnections, "SlideShowDetailUpdated",
-                new object[] {slideShowDetailUpdate});
-        }
-        
-        public static Task SendChannelName(this IHubContext<UserHub> hubContext,
-            IEnumerable<UserConnection> userConnections, string channelName)
-        {
-            return hubContext.SendAllUsers(userConnections, "SlideShowDetailUpdated",
-                new object[] {channelName});
+            return hubContext.Clients.Group(channelId).SendAsync("SlideShowDetailUpdated", slideShowDetailUpdate);
         }
 
         #endregion
