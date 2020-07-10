@@ -24,6 +24,11 @@ namespace PresenterClient.SignalR
             await hubConnection.SendAsync(ServerMethods.UpdateSlideShowDetail, slideShowDetail);
         }
 
+        public static async Task SendUserUpdateAsync(this HubConnection hubConnection, ChannelUser channelUser)
+        {
+            await hubConnection.SendAsync(ServerMethods.UpdateUser, channelUser);
+        }
+
         public static void OnSlideShowActionReceived(this HubConnection hubConnection, Action<SlideShowAction> action)
         {
             hubConnection.On(ClientMethods.SlideShowActionReceived, action);

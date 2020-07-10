@@ -10,8 +10,19 @@
         </Grid.RowDefinitions>
         <Label FontSize="14" Content="Connections" HorizontalAlignment="Center" />
         <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness=".5" CornerRadius="3" Margin="18 0" Height="215">
-            <ListBox ItemsSource="{Binding ChannelUsers}" DisplayMemberPath="Name" BorderThickness="0"
-                     Margin="2" FontSize="14" />
+            <DataGrid ItemsSource="{Binding ChannelUsers}" AutoGenerateColumns="False" GridLinesVisibility="None"
+                      CanUserAddRows="False" Background="Transparent">
+                <DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="FontSize" Value="14" />
+                    </Style>
+                </DataGrid.CellStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True" />
+                    <DataGridCheckBoxColumn Header="Allow Control"
+                                            Binding="{Binding AllowControl, UpdateSourceTrigger=PropertyChanged}" />
+                </DataGrid.Columns>
+            </DataGrid>
         </Border>
     </Grid>
 </UserControl>

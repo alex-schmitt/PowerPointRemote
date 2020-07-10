@@ -6,5 +6,6 @@ namespace PresenterClient.SignalR.Messages
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public bool AllowControl { get; set; }
     }
 }
