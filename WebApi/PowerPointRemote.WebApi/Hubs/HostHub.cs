@@ -55,7 +55,7 @@ namespace PowerPointRemote.WebApi.Hubs
             await _applicationDbContext.SaveChangesAsync();
         }
 
-        public async Task EndChannel()
+        public async Task StopChannel()
         {
             var channelId = Context.User.FindFirst("ChannelId").Value;
 
