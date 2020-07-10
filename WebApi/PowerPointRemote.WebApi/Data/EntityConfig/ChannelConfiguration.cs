@@ -9,7 +9,6 @@ namespace PowerPointRemote.WebApi.Data.EntityConfig
         public void Configure(EntityTypeBuilder<Channel> builder)
         {
             builder.Property(c => c.Id).HasColumnType("char(9)");
-            builder.Property(c => c.HostConnectionId).HasMaxLength(255);
         }
     }
 }

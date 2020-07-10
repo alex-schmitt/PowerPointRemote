@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using PowerPointRemote.WebApi.ApplicationSettings;
 using PowerPointRemote.WebAPI.Data;
+using PowerPointRemote.WebAPI.Data.Repositories;
 using PowerPointRemote.WebApi.Hubs;
 
 namespace PowerPointRemote.WebApi
@@ -71,9 +72,9 @@ namespace PowerPointRemote.WebApi
 
             services.AddControllers();
             services.AddSignalR();
-            services.AddMemoryCache();
 
             services.AddSingleton(s => jwtSettings);
+            services.AddSingleton<IHostConnectionRepository, HostConnectionRepository>();
 
             services.AddAuthentication(options =>
                 {

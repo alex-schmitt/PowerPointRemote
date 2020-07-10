@@ -25,15 +25,8 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 b.Property<bool>("ChannelEnded")
                     .HasColumnType("tinyint(1)");
 
-                b.Property<string>("HostConnectionId")
-                    .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                    .HasMaxLength(255);
-
                 b.Property<DateTime>("LastUpdate")
                     .HasColumnType("datetime(6)");
-
-                b.Property<string>("Name")
-                    .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                 b.HasKey("Id");
 

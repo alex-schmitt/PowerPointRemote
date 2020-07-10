@@ -5,8 +5,8 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using PowerPointRemote.WebAPI.Data;
+using PowerPointRemote.WebAPI.Data.Repositories;
 using PowerPointRemote.WebApi.Extensions;
 using PowerPointRemote.WebApi.Models;
 using PowerPointRemote.WebApi.Models.Entity;
@@ -16,15 +16,15 @@ namespace PowerPointRemote.WebApi.Hubs
     public class UserHub : Hub
     {
         private readonly ApplicationDbContext _applicationDbContext;
+        private readonly IHostConnectionRepository _hostConnectionRepository;
         private readonly IHubContext<HostHub> _hostHubContext;
-        private readonly IMemoryCache _memoryCache;
 
-        public UserHub(ApplicationDbContext applicationDbContext, IMemoryCache memoryCache,
-            IHubContext<HostHub> hostHubContext)
+        public UserHub(ApplicationDbContext applicationDbContext, IHubContext<HostHub> hostHubContext,
+            IHostConnectionRepository hostConnectionRepository)
         {
             _applicationDbContext = applicationDbContext;
-            _memoryCache = memoryCache;
             _hostHubContext = hostHubContext;
+            _hostConnectionRepository = hostConnectionRepository;
         }
 
         public override async Task OnConnectedAsync()
@@ -32,9 +32,8 @@ namespace PowerPointRemote.WebApi.Hubs
             var channelId = Context.User.FindFirst("ChannelId").Value;
             await Groups.AddToGroupAsync(Context.ConnectionId, channelId);
 
-            var userId = Guid.Parse(Context.User.Identity.Name);
-            var hostConnectionId = await GetHostConnectionIdAsync(channelId);
 
+            var userId = Guid.Parse(Context.User.Identity.Name);
             var user = await _applicationDbContext.Users.Include(u => u.Connections)
                 .SingleOrDefaultAsync(u => u.Id == userId);
 
@@ -49,6 +48,7 @@ namespace PowerPointRemote.WebApi.Hubs
 
             await _applicationDbContext.SaveChangesAsync();
 
+            var hostConnectionId = _hostConnectionRepository.GetConnection(channelId);
             if (user.Connections.Count == 1 && hostConnectionId != null)
                 await _hostHubContext.SendUserConnected(hostConnectionId, user.Id, user.Name);
         }
@@ -57,11 +57,11 @@ namespace PowerPointRemote.WebApi.Hubs
         {
             var userId = Guid.Parse(Context.User.Identity.Name);
             var channelId = Context.User.FindFirst("ChannelId").Value;
-            var hostConnectionId = await GetHostConnectionIdAsync(channelId);
 
             var usersConnectionCount =
                 await _applicationDbContext.UserConnections.Where(uc => uc.UserId == userId).CountAsync();
 
+            var hostConnectionId = _hostConnectionRepository.GetConnection(channelId);
             if (usersConnectionCount == 1 && hostConnectionId != null)
                 await _hostHubContext.SendUserDisconnected(hostConnectionId, userId);
 
@@ -73,7 +73,7 @@ namespace PowerPointRemote.WebApi.Hubs
         {
             var userId = Guid.Parse(Context.User.Identity.Name);
             var channelId = Context.User.FindFirst("ChannelId").Value;
-            var hostConnectionId = await GetHostConnectionIdAsync(channelId);
+            var hostConnectionId = _hostConnectionRepository.GetConnection(channelId);
 
             if (hostConnectionId == null) return new HubActionResult(HttpStatusCode.NotFound);
 
@@ -106,15 +106,6 @@ namespace PowerPointRemote.WebApi.Hubs
             };
 
             return new HubActionResult(HttpStatusCode.OK, slideShowDetailUpdate);
-        }
-
-        private async Task<string> GetHostConnectionIdAsync(string channelId)
-        {
-            return await _memoryCache.GetOrCreateAsync(channelId, async entry =>
-            {
-                var channel = await _applicationDbContext.Channels.FindAsync(channelId);
-                return channel.HostConnectionId;
-            });
         }
     }
 }
