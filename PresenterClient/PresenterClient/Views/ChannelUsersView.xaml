@@ -11,16 +11,57 @@
         <Label FontSize="14" Content="Connections" HorizontalAlignment="Center" />
         <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness=".5" CornerRadius="3" Margin="18 0" Height="215">
             <DataGrid ItemsSource="{Binding ChannelUsers}" AutoGenerateColumns="False" GridLinesVisibility="None"
-                      CanUserAddRows="False" Background="Transparent">
+                      CanUserAddRows="False" Background="Transparent" HeadersVisibility="Column">
+                <DataGrid.Resources>
+                    <ResourceDictionary>
+                        <Style TargetType="{x:Type DataGridRow}" />
+                    </ResourceDictionary>
+                </DataGrid.Resources>
                 <DataGrid.CellStyle>
                     <Style TargetType="DataGridCell">
                         <Setter Property="FontSize" Value="14" />
+                        <Setter Property="Background" Value="{x:Null}" />
+                        <Setter Property="BorderBrush" Value="{x:Null}" />
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{x:Null}" />
+                                <Setter Property="BorderBrush" Value="{x:Null}" />
+                                <Setter Property="Foreground" Value="Black" />
+                            </Trigger>
+                        </Style.Triggers>
                     </Style>
                 </DataGrid.CellStyle>
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Background" Value="{x:Null}" />
+                        <Setter Property="BorderBrush" Value="{x:Null}" />
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{x:Null}" />
+                                <Setter Property="BorderBrush" Value="{x:Null}" />
+                                <Setter Property="Foreground" Value="Black" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="WhiteSmoke" />
+                        <Setter Property="FontSize" Value="14" />
+                        <Setter Property="Padding" Value="5 2" />
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True" />
-                    <DataGridCheckBoxColumn Header="Allow Control"
-                                            Binding="{Binding AllowControl, UpdateSourceTrigger=PropertyChanged}" />
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True"
+                                        CanUserSort="False" SortDirection="Descending" CanUserResize="False" />
+                    <DataGridTemplateColumn Header="Allow Control" CanUserResize="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding AllowControl, UpdateSourceTrigger=PropertyChanged}"
+                                          HorizontalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
