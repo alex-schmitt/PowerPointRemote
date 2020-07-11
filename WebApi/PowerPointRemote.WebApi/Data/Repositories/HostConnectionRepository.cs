@@ -13,7 +13,7 @@ namespace PowerPointRemote.WebAPI.Data.Repositories
 
         public void SetConnection(string channelId, string connectionId)
         {
-            Data.Add(channelId, connectionId);
+            Data[channelId] = connectionId;
         }
 
         public void RemoveConnection(string channelId)
@@ -23,7 +23,8 @@ namespace PowerPointRemote.WebAPI.Data.Repositories
 
         public string GetConnection(string channelId)
         {
-            return Data[channelId];
+            Data.TryGetValue(channelId, out var connectionId);
+            return connectionId;
         }
     }
 }

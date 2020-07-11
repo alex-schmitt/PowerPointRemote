@@ -6,6 +6,7 @@ using PowerPointRemote.WebAPI.Data;
 using PowerPointRemote.WebAPI.Data.Repositories;
 using PowerPointRemote.WebApi.Extensions;
 using PowerPointRemote.WebApi.Models;
+using PowerPointRemote.WebApi.Models.Messages;
 
 namespace PowerPointRemote.WebApi.Hubs
 {
@@ -14,13 +15,15 @@ namespace PowerPointRemote.WebApi.Hubs
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly IHostConnectionRepository _hostConnectionRepository;
         private readonly IHubContext<UserHub> _userHubContext;
+        private readonly IUserPermissionRepository _userPermissionRepository;
 
         public HostHub(ApplicationDbContext applicationDbContext, IHubContext<UserHub> userHubContext,
-            IHostConnectionRepository hostConnectionRepository)
+            IHostConnectionRepository hostConnectionRepository, IUserPermissionRepository userPermissionRepository)
         {
             _applicationDbContext = applicationDbContext;
             _userHubContext = userHubContext;
             _hostConnectionRepository = hostConnectionRepository;
+            _userPermissionRepository = userPermissionRepository;
         }
 
         public override async Task OnConnectedAsync()
@@ -37,22 +40,29 @@ namespace PowerPointRemote.WebApi.Hubs
             await _userHubContext.SendHostDisconnected(channelId);
         }
 
-        public async Task UpdateSlideShowDetail(SlideShowDetailUpdate slideShowDetailUpdate)
+        public async Task SetSlideShowDetail(SlideShowDetailMsg slideShowDetailMsg)
         {
             var channelId = Context.User.FindFirst("ChannelId").Value;
 
-            await _userHubContext.SendSlideShowDetail(channelId, slideShowDetailUpdate);
+            await _userHubContext.SendSlideShowDetail(channelId, slideShowDetailMsg);
 
-            var slideShowDetail =
+            var currentDetail =
                 await _applicationDbContext.SlideShowDetail.SingleOrDefaultAsync(ssd => ssd.ChannelId == channelId);
 
-            slideShowDetail.Enabled = slideShowDetailUpdate.SlideShowEnabled;
-            slideShowDetail.Name = slideShowDetailUpdate.SlideShowName;
-            slideShowDetail.CurrentSlide = slideShowDetailUpdate.CurrentSlide;
-            slideShowDetail.TotalSlides = slideShowDetailUpdate.TotalSlides;
-            slideShowDetail.LastUpdate = slideShowDetailUpdate.Timestamp;
+            currentDetail.Enabled = slideShowDetailMsg.SlideShowEnabled;
+            currentDetail.Name = slideShowDetailMsg.Name;
+            currentDetail.CurrentSlide = slideShowDetailMsg.CurrentSlide;
+            currentDetail.TotalSlides = slideShowDetailMsg.TotalSlides;
+            currentDetail.LastUpdate = slideShowDetailMsg.Timestamp;
 
             await _applicationDbContext.SaveChangesAsync();
+        }
+
+        public Task SetUserPermission(UserPermissionMsg userPermissionMsg)
+        {
+            _userPermissionRepository.SetPermission(userPermissionMsg.UserId,
+                new UserPermission {AllowControl = userPermissionMsg.AllowControl});
+            return Task.CompletedTask;
         }
 
         public async Task StopChannel()

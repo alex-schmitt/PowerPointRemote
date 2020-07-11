@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PowerPointRemote.WebApi.Models.Entity
+namespace PowerPointRemote.WebApi.Models.EntityFramework
 {
     public class Channel
     {

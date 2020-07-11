@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using PowerPointRemote.WebApi.Hubs;
-using PowerPointRemote.WebApi.Models;
+using PowerPointRemote.WebApi.Models.Messages;
 
 namespace PowerPointRemote.WebApi.Extensions
 {
@@ -11,10 +11,9 @@ namespace PowerPointRemote.WebApi.Extensions
         #region HostHub
 
         public static Task SendUserConnected(this IHubContext<HostHub> hubContext, string hostConnectionId,
-            Guid userId, string userName)
+            ChannelUserMsg channelUserMsg)
         {
-            var message = new {Id = userId, Name = userName};
-            return hubContext.Clients.Client(hostConnectionId).SendAsync("UserConnected", message);
+            return hubContext.Clients.Client(hostConnectionId).SendAsync("UserConnected", channelUserMsg);
         }
 
         public static Task SendUserDisconnected(this IHubContext<HostHub> hubContext, string hostConnectionId,
@@ -25,10 +24,10 @@ namespace PowerPointRemote.WebApi.Extensions
         }
 
         public static Task SendSlideShowCommand(this IHubContext<HostHub> hubContext, string hostConnectionId,
-            SlideShowCommand slideShowCommand)
+            SlideShowActionMsg slideShowActionMsg)
         {
             return hubContext.Clients.Client(hostConnectionId)
-                .SendAsync("SlideShowActionReceived", slideShowCommand);
+                .SendAsync("SlideShowActionReceived", slideShowActionMsg);
         }
 
         #endregion
@@ -51,9 +50,9 @@ namespace PowerPointRemote.WebApi.Extensions
         }
 
         public static Task SendSlideShowDetail(this IHubContext<UserHub> hubContext,
-            string channelId, SlideShowDetailUpdate slideShowDetailUpdate)
+            string channelId, SlideShowDetailMsg slideShowDetailMsg)
         {
-            return hubContext.Clients.Group(channelId).SendAsync("SlideShowDetailUpdated", slideShowDetailUpdate);
+            return hubContext.Clients.Group(channelId).SendAsync("SlideShowDetailUpdated", slideShowDetailMsg);
         }
 
         #endregion

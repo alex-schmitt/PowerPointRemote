@@ -2,9 +2,8 @@
 {
     public static class ServerMethods
     {
-        public const string StartChannel = "StartChannel";
         public const string StopChannel = "StopChannel";
-        public const string UpdateSlideShowDetail = "UpdateSlideShowDetail";
-        public const string UpdateUser = "UpdateUser";
+        public const string SetSlideShowDetail = "SetSlideShowDetail";
+        public const string SetUserPermission = "SetUserPermission";
     }
 }

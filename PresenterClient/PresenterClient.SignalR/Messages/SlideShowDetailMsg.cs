@@ -2,7 +2,7 @@
 
 namespace PresenterClient.SignalR.Messages
 {
-    public class SlideShowDetail
+    public class SlideShowDetailMsg
     {
         public bool SlideShowEnabled { get; set; }
         public string Name { get; set; }

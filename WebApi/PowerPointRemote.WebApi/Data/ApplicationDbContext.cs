@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PowerPointRemote.WebApi.Data.EntityConfig;
-using PowerPointRemote.WebApi.Models.Entity;
+using PowerPointRemote.WebApi.Models.EntityFramework;
 
 namespace PowerPointRemote.WebAPI.Data
 {

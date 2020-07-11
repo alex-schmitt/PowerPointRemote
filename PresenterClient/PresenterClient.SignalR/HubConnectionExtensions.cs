@@ -8,38 +8,35 @@ namespace PresenterClient.SignalR
 {
     public static class HubConnectionExtensions
     {
-        public static async Task SendChannelStartedAsync(this HubConnection hubConnection)
-        {
-            await hubConnection.SendAsync(ServerMethods.StartChannel);
-        }
-
         public static async Task SendChannelEndedAsync(this HubConnection hubConnection)
         {
             await hubConnection.SendAsync(ServerMethods.StopChannel);
         }
 
-        public static async Task SendSlideShowDetailAsync(this HubConnection hubConnection,
-            SlideShowDetail slideShowDetail)
+        public static async Task SendSetSlideShowDetailAsync(this HubConnection hubConnection,
+            SlideShowDetailMsg slideShowDetailMsg)
         {
-            await hubConnection.SendAsync(ServerMethods.UpdateSlideShowDetail, slideShowDetail);
+            await hubConnection.SendAsync(ServerMethods.SetSlideShowDetail, slideShowDetailMsg);
         }
 
-        public static async Task SendUserUpdateAsync(this HubConnection hubConnection, ChannelUser channelUser)
+        public static async Task SendSetUserPermission(this HubConnection hubConnection,
+            UserPermissionMsg userPermissionMsg)
         {
-            await hubConnection.SendAsync(ServerMethods.UpdateUser, channelUser);
+            await hubConnection.SendAsync(ServerMethods.SetUserPermission, userPermissionMsg);
         }
 
-        public static void OnSlideShowActionReceived(this HubConnection hubConnection, Action<SlideShowAction> action)
+        public static void OnSlideShowActionReceived(this HubConnection hubConnection,
+            Action<SlideShowActionMsg> action)
         {
             hubConnection.On(ClientMethods.SlideShowActionReceived, action);
         }
 
-        public static void OnUserConnected(this HubConnection hubConnection, Action<ChannelUser> action)
+        public static void OnUserConnected(this HubConnection hubConnection, Action<ChannelUserMsg> action)
         {
             hubConnection.On(ClientMethods.UserConnected, action);
         }
 
-        public static void OnUserDisconnected(this HubConnection hubConnection, Action<ChannelUser> action)
+        public static void OnUserDisconnected(this HubConnection hubConnection, Action<ChannelUserMsg> action)
         {
             hubConnection.On(ClientMethods.UserDisconnected, action);
         }

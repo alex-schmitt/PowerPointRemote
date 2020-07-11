@@ -2,10 +2,9 @@
 
 namespace PresenterClient.SignalR.Messages
 {
-    public class ChannelUser
+    public class UserPermissionMsg
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
+        public Guid UserId { get; set; }
         public bool AllowControl { get; set; }
     }
 }

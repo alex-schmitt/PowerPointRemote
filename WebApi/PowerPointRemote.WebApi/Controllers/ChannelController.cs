@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using PowerPointRemote.WebApi.ApplicationSettings;
 using PowerPointRemote.WebAPI.Data;
-using PowerPointRemote.WebApi.Models.Entity;
-using PowerPointRemote.WebApi.Models.Request;
+using PowerPointRemote.WebApi.Models.EntityFramework;
+using PowerPointRemote.WebApi.Models.HttpRequests;
 
 namespace PowerPointRemote.WebApi.Controllers
 {

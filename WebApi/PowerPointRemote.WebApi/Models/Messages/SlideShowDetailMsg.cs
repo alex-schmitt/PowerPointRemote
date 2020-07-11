@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace PowerPointRemote.WebApi.Models
+namespace PowerPointRemote.WebApi.Models.Messages
 {
-    public class SlideShowDetailUpdate
+    public class SlideShowDetailMsg
     {
         public bool SlideShowEnabled { get; set; }
-        public string SlideShowName { get; set; }
+        public string Name { get; set; }
         public int CurrentSlide { get; set; }
         public int TotalSlides { get; set; }
         public DateTime Timestamp { get; set; }

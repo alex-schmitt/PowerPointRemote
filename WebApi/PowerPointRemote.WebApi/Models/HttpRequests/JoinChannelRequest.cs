@@ -1,4 +1,4 @@
-﻿namespace PowerPointRemote.WebApi.Models.Request
+﻿namespace PowerPointRemote.WebApi.Models.HttpRequests
 {
     public class JoinChannelRequest
     {

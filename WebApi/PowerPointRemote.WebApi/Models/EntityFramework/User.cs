@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PowerPointRemote.WebApi.Models.Entity
+namespace PowerPointRemote.WebApi.Models.EntityFramework
 {
     public class User
     {

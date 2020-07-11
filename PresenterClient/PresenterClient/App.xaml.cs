@@ -45,14 +45,14 @@ namespace PresenterClient
             _signalRService.Started += SignalRServiceOnStarted;
         }
 
-        private void ProcessSlideShowAction(SlideShowAction slideShowAction)
+        private void ProcessSlideShowAction(SlideShowActionMsg slideShowActionMsg)
         {
             var wn = _powerPointService.ActiveSlideShowWindow;
 
             if (wn == null)
                 return;
 
-            switch (slideShowAction.Code)
+            switch (slideShowActionMsg.Code)
             {
                 case 0:
                     wn.View.Next();
@@ -68,7 +68,7 @@ namespace PresenterClient
             if (_signalRService.HubConnection?.State != HubConnectionState.Connected)
                 return;
 
-            await _signalRService.HubConnection.SendSlideShowDetailAsync(
+            await _signalRService.HubConnection.SendSetSlideShowDetailAsync(
                 CreateSlideShowDetail(_powerPointService.ActiveSlideShowWindow));
         }
 
@@ -77,15 +77,15 @@ namespace PresenterClient
             _powerPointService.ActiveSlideShowWindowChanged += OnActiveSlideShowWindowChanged;
             _signalRService.HubConnection.OnSlideShowActionReceived(ProcessSlideShowAction);
 
-            // Send the initial SlideShowDetail if available
+            // Send the initial SlideShowDetailMsg if available
             if (_powerPointService.ActiveSlideShowWindow != null)
-                await _signalRService.HubConnection.SendSlideShowDetailAsync(
+                await _signalRService.HubConnection.SendSetSlideShowDetailAsync(
                     CreateSlideShowDetail(_powerPointService.ActiveSlideShowWindow));
         }
 
-        private static SlideShowDetail CreateSlideShowDetail(SlideShowWindow slideShowWindow)
+        private static SlideShowDetailMsg CreateSlideShowDetail(SlideShowWindow slideShowWindow)
         {
-            return new SlideShowDetail
+            return new SlideShowDetailMsg
             {
                 Name = slideShowWindow?.Presentation.Name ?? "",
                 SlideShowEnabled = slideShowWindow != null,

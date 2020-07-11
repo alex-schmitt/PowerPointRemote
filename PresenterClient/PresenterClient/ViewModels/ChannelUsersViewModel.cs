@@ -6,6 +6,7 @@ using System.Linq;
 using PresenterClient.Model;
 using PresenterClient.Services;
 using PresenterClient.SignalR;
+using PresenterClient.SignalR.Messages;
 using Prism.Mvvm;
 using static System.Windows.Application;
 
@@ -49,9 +50,9 @@ namespace PresenterClient.ViewModels
         private async void UserOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var user = (ChannelUser) sender;
-            await _signalRService.HubConnection.SendUserUpdateAsync(new SignalR.Messages.ChannelUser
+            await _signalRService.HubConnection.SendSetUserPermission(new UserPermissionMsg
             {
-                Id = user.Id,
+                UserId = user.Id,
                 AllowControl = user.AllowControl
             });
         }
@@ -69,19 +70,19 @@ namespace PresenterClient.ViewModels
             Current.Dispatcher.Invoke(() => ChannelUsers.Clear());
         }
 
-        private void RemoveChannelUser(SignalR.Messages.ChannelUser user)
+        private void RemoveChannelUser(ChannelUserMsg userMsg)
         {
-            var connectedUser = ChannelUsers.FirstOrDefault(u => u.Id == user.Id);
+            var connectedUser = ChannelUsers.FirstOrDefault(u => u.Id == userMsg.Id);
             Current.Dispatcher.Invoke(() => ChannelUsers.Remove(connectedUser));
         }
 
-        private void AddChannelUser(SignalR.Messages.ChannelUser user)
+        private void AddChannelUser(ChannelUserMsg userMsg)
         {
             Current.Dispatcher.Invoke(() => ChannelUsers.Add(new ChannelUser
             {
-                Name = user.Name,
-                AllowControl = user.AllowControl,
-                Id = user.Id
+                Name = userMsg.Name,
+                AllowControl = userMsg.AllowControl,
+                Id = userMsg.Id
             }));
         }
     }

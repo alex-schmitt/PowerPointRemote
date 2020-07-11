@@ -75,6 +75,7 @@ namespace PowerPointRemote.WebApi
 
             services.AddSingleton(s => jwtSettings);
             services.AddSingleton<IHostConnectionRepository, HostConnectionRepository>();
+            services.AddSingleton<IUserPermissionRepository, UserPermissionRepository>();
 
             services.AddAuthentication(options =>
                 {
