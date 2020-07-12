@@ -91,6 +91,7 @@ namespace PresenterClient
                 SlideShowEnabled = slideShowWindow != null,
                 CurrentSlide = slideShowWindow?.View.CurrentShowPosition ?? 0,
                 TotalSlides = slideShowWindow?.Presentation.Slides.Count ?? 0,
+                CurrentSlideNotes = slideShowWindow == null ? "" : PowerPointService.BuildNotes(slideShowWindow),
                 Timestamp = DateTime.Now
             };
         }
