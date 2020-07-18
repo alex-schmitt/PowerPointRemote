@@ -81,6 +81,7 @@
     <Compile Include="Services\ISignalRService.cs" />
     <Compile Include="Services\SignalRService.cs" />
     <Compile Include="Services\PowerPointService.cs" />
+    <Compile Include="Services\NoteTreeBuilder.cs" />
     <Compile Include="ViewModels\ChannelControlsViewModel.cs" />
     <Compile Include="ViewModels\ChannelUsersViewModel.cs" />
     <Compile Include="ViewModels\ConnectionDetailViewModel.cs" />

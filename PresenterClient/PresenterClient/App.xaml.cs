@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Linq;
+using System.Text;
 using System.Windows;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Office.Core;
 using Microsoft.Office.Interop.PowerPoint;
+using PresenterClient.NoteConverter;
 using PresenterClient.Services;
 using PresenterClient.SignalR;
 using PresenterClient.SignalR.Messages;
 using PresenterClient.Views;
 using Prism.Ioc;
+using Shape = Microsoft.Office.Interop.PowerPoint.Shape;
 
 namespace PresenterClient
 {
@@ -91,9 +96,63 @@ namespace PresenterClient
                 SlideShowEnabled = slideShowWindow != null,
                 CurrentSlide = slideShowWindow?.View.CurrentShowPosition ?? 0,
                 TotalSlides = slideShowWindow?.Presentation.Slides.Count ?? 0,
-                CurrentSlideNotes = slideShowWindow == null ? "" : PowerPointService.BuildNotes(slideShowWindow),
+                CurrentSlideNotes =
+                    GetSlideNotes(slideShowWindow?.Presentation.Slides[slideShowWindow.View.CurrentShowPosition]),
                 Timestamp = DateTime.Now
             };
+        }
+
+        private static string GetSlideNotes(Slide slide)
+        {
+            if (slide == null || slide.HasNotesPage == MsoTriState.msoFalse)
+                return null;
+
+            var bodyRange = GetSlideNoteBodyRange(slide);
+
+            if (bodyRange == null)
+                return null;
+
+            var noteBuilder = new NoteTreeBuilder();
+            var tree = noteBuilder.Build(bodyRange);
+            var stringBuilder = new StringBuilder();
+            tree.WriteHtml(stringBuilder);
+            return stringBuilder.ToString();
+        }
+
+        private static TextRange GetSlideNoteBodyRange(Slide slide)
+        {
+            // There are two placeholders in a notes page, the one is the note body and the other is the slide image.
+            var shape = slide.NotesPage.Shapes.Placeholders.Cast<Shape>()
+                .FirstOrDefault(s => s.TextFrame.HasText == MsoTriState.msoTrue);
+
+            return shape?.TextFrame.TextRange;
+        }
+
+        public static Alignment ConvertAlignment(PpParagraphAlignment ppAlignment)
+        {
+            switch (ppAlignment)
+            {
+                case PpParagraphAlignment.ppAlignLeft:
+                    return Alignment.Left;
+                case PpParagraphAlignment.ppAlignCenter:
+                    return Alignment.Center;
+                case PpParagraphAlignment.ppAlignRight:
+                    return Alignment.Right;
+                case PpParagraphAlignment.ppAlignJustify:
+                    return Alignment.Justify;
+                default:
+                    return Alignment.Left;
+            }
+        }
+
+        public static List? ConvertList(PpBulletType ppBullet)
+        {
+            if (ppBullet == PpBulletType.ppBulletUnnumbered)
+                return List.Bullet;
+            if (ppBullet == PpBulletType.ppBulletNumbered)
+                return List.Ordered;
+
+            return null;
         }
     }
 }

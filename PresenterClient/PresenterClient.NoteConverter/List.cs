@@ -2,6 +2,7 @@
 {
     public enum List
     {
+        None,
         Ordered,
         Bullet
     }

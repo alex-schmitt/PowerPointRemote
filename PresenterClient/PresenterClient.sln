@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenterClient.Common", "P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenterClient.Http", "PresenterClient.Http\PresenterClient.Http.csproj", "{6397788F-45F4-461F-9A6D-7D6D4AD6100E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresenterClient.NoteConverter", "PresenterClient.NoteConverter\PresenterClient.NoteConverter.csproj", "{626A98F4-26D6-4F30-B19E-4814AB623579}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenterClient.NoteConverter", "PresenterClient.NoteConverter\PresenterClient.NoteConverter.csproj", "{626A98F4-26D6-4F30-B19E-4814AB623579}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
