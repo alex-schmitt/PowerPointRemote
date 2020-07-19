@@ -4,6 +4,7 @@
     {
         public const string StopChannel = "StopChannel";
         public const string SetSlideShowDetail = "SetSlideShowDetail";
+        public const string SetCurrentSlideDetail = "SetCurrentSlideDetail";
         public const string SetUserPermission = "SetUserPermission";
     }
 }

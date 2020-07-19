@@ -17,7 +17,7 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("PowerPointRemote.WebApi.Models.Entity.Channel", b =>
+            modelBuilder.Entity("PowerPointRemote.WebApi.Models.EntityFramework.Channel", b =>
             {
                 b.Property<string>("Id")
                     .HasColumnType("char(9)");
@@ -25,47 +25,27 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 b.Property<bool>("ChannelEnded")
                     .HasColumnType("tinyint(1)");
 
+                b.Property<string>("CurrentSlideNotes")
+                    .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                b.Property<int>("CurrentSlidePosition")
+                    .HasColumnType("int");
+
                 b.Property<DateTime>("LastUpdate")
                     .HasColumnType("datetime(6)");
+
+                b.Property<int>("SlideCount")
+                    .HasColumnType("int");
+
+                b.Property<bool>("SlideShowStarted")
+                    .HasColumnType("tinyint(1)");
 
                 b.HasKey("Id");
 
                 b.ToTable("Channels");
             });
 
-            modelBuilder.Entity("PowerPointRemote.WebApi.Models.Entity.SlideShowDetail", b =>
-            {
-                b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("char(36)");
-
-                b.Property<string>("ChannelId")
-                    .HasColumnType("char(9)");
-
-                b.Property<int>("CurrentSlide")
-                    .HasColumnType("int");
-
-                b.Property<bool>("Enabled")
-                    .HasColumnType("tinyint(1)");
-
-                b.Property<DateTime>("LastUpdate")
-                    .HasColumnType("datetime(6)");
-
-                b.Property<string>("Name")
-                    .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                b.Property<int>("TotalSlides")
-                    .HasColumnType("int");
-
-                b.HasKey("Id");
-
-                b.HasIndex("ChannelId")
-                    .IsUnique();
-
-                b.ToTable("SlideShowDetail");
-            });
-
-            modelBuilder.Entity("PowerPointRemote.WebApi.Models.Entity.User", b =>
+            modelBuilder.Entity("PowerPointRemote.WebApi.Models.EntityFramework.User", b =>
             {
                 b.Property<Guid>("Id")
                     .ValueGeneratedOnAdd()
@@ -89,16 +69,9 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 b.ToTable("Users");
             });
 
-            modelBuilder.Entity("PowerPointRemote.WebApi.Models.Entity.SlideShowDetail", b =>
+            modelBuilder.Entity("PowerPointRemote.WebApi.Models.EntityFramework.User", b =>
             {
-                b.HasOne("PowerPointRemote.WebApi.Models.Entity.Channel", "Channel")
-                    .WithOne("SlideShowDetail")
-                    .HasForeignKey("PowerPointRemote.WebApi.Models.Entity.SlideShowDetail", "ChannelId");
-            });
-
-            modelBuilder.Entity("PowerPointRemote.WebApi.Models.Entity.User", b =>
-            {
-                b.HasOne("PowerPointRemote.WebApi.Models.Entity.Channel", "Channel")
+                b.HasOne("PowerPointRemote.WebApi.Models.EntityFramework.Channel", "Channel")
                     .WithMany("Users")
                     .HasForeignKey("ChannelId")
                     .OnDelete(DeleteBehavior.Cascade)

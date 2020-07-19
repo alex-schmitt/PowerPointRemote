@@ -33,12 +33,7 @@ namespace PowerPointRemote.WebApi.Controllers
             var channel = new Channel
             {
                 Id = channelId,
-                LastUpdate = now,
-                SlideShowDetail = new SlideShowDetail
-                {
-                    ChannelId = channelId,
-                    LastUpdate = now
-                }
+                LastUpdate = now
             };
 
             await _applicationDbContext.Channels.AddAsync(channel);

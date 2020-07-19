@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using PowerPointRemote.WebAPI.Data;
 using PowerPointRemote.WebAPI.Data.Repositories;
 using PowerPointRemote.WebApi.Extensions;
 using PowerPointRemote.WebApi.Models;
+using PowerPointRemote.WebApi.Models.EntityFramework;
 using PowerPointRemote.WebApi.Models.Messages;
 
 namespace PowerPointRemote.WebApi.Hubs
@@ -46,14 +46,42 @@ namespace PowerPointRemote.WebApi.Hubs
 
             await _userHubContext.SendSlideShowDetail(channelId, slideShowDetailMsg);
 
-            var currentDetail =
-                await _applicationDbContext.SlideShowDetail.SingleOrDefaultAsync(ssd => ssd.ChannelId == channelId);
+            var channelUpdate = new Channel
+            {
+                Id = channelId,
+                SlideShowStarted = slideShowDetailMsg.Started,
+                SlideCount = slideShowDetailMsg.SlideCount,
+                LastUpdate = new DateTime()
+            };
 
-            currentDetail.Enabled = slideShowDetailMsg.SlideShowEnabled;
-            currentDetail.Name = slideShowDetailMsg.Name;
-            currentDetail.CurrentSlide = slideShowDetailMsg.CurrentSlide;
-            currentDetail.TotalSlides = slideShowDetailMsg.TotalSlides;
-            currentDetail.LastUpdate = slideShowDetailMsg.Timestamp;
+            _applicationDbContext.Attach(channelUpdate);
+            _applicationDbContext.Entry(channelUpdate).Property(p => p.SlideShowStarted).IsModified = true;
+            _applicationDbContext.Entry(channelUpdate).Property(p => p.SlideCount).IsModified = true;
+            _applicationDbContext.Entry(channelUpdate).Property(p => p.LastUpdate).IsModified = true;
+
+            await _applicationDbContext.SaveChangesAsync();
+        }
+
+        public async Task SetCurrentSlideDetail(SlideDetailMsg slideDetailMsg)
+        {
+            // TODO: Sanitize HTML
+
+            var channelId = Context.User.FindFirst("ChannelId").Value;
+
+            await _userHubContext.SendCurrentSlideDetail(channelId, slideDetailMsg);
+
+            var channelUpdate = new Channel
+            {
+                Id = channelId,
+                CurrentSlidePosition = slideDetailMsg.CurrentPosition,
+                CurrentSlideNotes = slideDetailMsg.CurrentSlideNotes,
+                LastUpdate = new DateTime()
+            };
+
+            _applicationDbContext.Attach(channelUpdate);
+            _applicationDbContext.Entry(channelUpdate).Property(p => p.CurrentSlidePosition).IsModified = true;
+            _applicationDbContext.Entry(channelUpdate).Property(p => p.CurrentSlideNotes).IsModified = true;
+            _applicationDbContext.Entry(channelUpdate).Property(p => p.LastUpdate).IsModified = true;
 
             await _applicationDbContext.SaveChangesAsync();
         }

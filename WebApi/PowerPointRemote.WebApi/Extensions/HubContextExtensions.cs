@@ -55,6 +55,12 @@ namespace PowerPointRemote.WebApi.Extensions
             return hubContext.Clients.Group(channelId).SendAsync("SlideShowDetailUpdated", slideShowDetailMsg);
         }
 
+        public static Task SendCurrentSlideDetail(this IHubContext<UserHub> hubContext,
+            string channelId, SlideDetailMsg slideDetailMsg)
+        {
+            return hubContext.Clients.Group(channelId).SendAsync("CurrentSlideDetailUpdated", slideDetailMsg);
+        }
+
         #endregion
     }
 }

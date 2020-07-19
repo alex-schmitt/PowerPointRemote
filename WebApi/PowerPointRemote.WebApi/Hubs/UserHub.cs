@@ -96,18 +96,14 @@ namespace PowerPointRemote.WebApi.Hubs
         {
             var channelId = Context.User.FindFirst("ChannelId").Value;
 
-            var slideShowDetail =
-                await _applicationDbContext.SlideShowDetail.SingleOrDefaultAsync(ssd => ssd.ChannelId == channelId);
+            var channel = await _applicationDbContext.Channels.FindAsync(channelId);
 
-            if (slideShowDetail == null) return new HubActionResult(HttpStatusCode.NotFound);
+            if (channel == null) return new HubActionResult(HttpStatusCode.NotFound);
 
             var slideShowDetailUpdate = new SlideShowDetailMsg
             {
-                SlideShowEnabled = slideShowDetail.Enabled,
-                Name = slideShowDetail.Name,
-                CurrentSlide = slideShowDetail.CurrentSlide,
-                TotalSlides = slideShowDetail.TotalSlides,
-                Timestamp = slideShowDetail.LastUpdate
+                Started = channel.SlideShowStarted,
+                SlideCount = channel.SlideCount
             };
 
             return new HubActionResult(HttpStatusCode.OK, slideShowDetailUpdate);

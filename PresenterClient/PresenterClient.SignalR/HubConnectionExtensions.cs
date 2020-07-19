@@ -19,6 +19,12 @@ namespace PresenterClient.SignalR
             await hubConnection.SendAsync(ServerMethods.SetSlideShowDetail, slideShowDetailMsg);
         }
 
+        public static async Task SendSetCurrentSlideDetailAsync(this HubConnection hubConnection,
+            SlideDetailMsg slideDetailMsg)
+        {
+            await hubConnection.SendAsync(ServerMethods.SetCurrentSlideDetail, slideDetailMsg);
+        }
+
         public static async Task SendSetUserPermission(this HubConnection hubConnection,
             UserPermissionMsg userPermissionMsg)
         {

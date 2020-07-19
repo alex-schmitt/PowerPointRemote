@@ -11,8 +11,6 @@ namespace PowerPointRemote.WebAPI.Data
         }
 
         public DbSet<Channel> Channels { get; set; }
-
-        public DbSet<SlideShowDetail> SlideShowDetail { get; set; }
         public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
