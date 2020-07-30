@@ -7,6 +7,7 @@ namespace PresenterClient.NoteConverter
         public static Dictionary<Tag, string> TagToString = new Dictionary<Tag, string>
         {
             {Tag.Div, "div"},
+            {Tag.Span, "span"},
             {Tag.P, "p"},
             {Tag.Ul, "ul"},
             {Tag.Ol, "ol"},

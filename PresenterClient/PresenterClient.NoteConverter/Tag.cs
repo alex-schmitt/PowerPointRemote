@@ -3,6 +3,7 @@
     public enum Tag
     {
         Div,
+        Span,
         P,
         Ul,
         Ol,

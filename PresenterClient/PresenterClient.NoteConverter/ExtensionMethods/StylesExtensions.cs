@@ -6,20 +6,23 @@ namespace PresenterClient.NoteConverter.ExtensionMethods
     {
         public static string Value(this Styles styles)
         {
+            if (styles == null)
+                return null;
+
             var builder = new StringBuilder();
 
-            builder.Append("style=\"");
+            builder.Append(" style=\"");
 
             var startLength = builder.Length;
 
             if (styles.FontSizeEm != null)
-                builder.Append($"font-size: {styles.FontSizeEm}em;");
+                builder.Append($"font-size:{styles.FontSizeEm}em;");
 
             if (styles.PaddingLeftEm != null)
-                builder.Append($"padding-left: {styles.PaddingLeftEm}em;");
+                builder.Append($"padding-left:{styles.PaddingLeftEm}em;");
 
             if (styles.TextAlign != null)
-                builder.Append($"text-align: {TextAlignTable.Table[styles.TextAlign]};");
+                builder.Append($"text-align:{TextAlignTable.Table[styles.TextAlign]};");
 
             if (builder.Length == startLength)
                 return null;

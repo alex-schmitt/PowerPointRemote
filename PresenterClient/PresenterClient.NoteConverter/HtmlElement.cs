@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using PresenterClient.NoteConverter.ExtensionMethods;
 
 namespace PresenterClient.NoteConverter
 {
@@ -67,7 +68,7 @@ namespace PresenterClient.NoteConverter
         {
             var tag = TagTable.TagToString[Tag];
 
-            stringBuilder.Append($"<{tag}>");
+            stringBuilder.Append($"<{tag}{StyleAttribute.Value()}>");
 
             if (Tag == Tag.Br)
                 return;

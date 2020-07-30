@@ -92,6 +92,20 @@ namespace PresenterClient.Services
                 else
                 {
                     currentList = null;
+
+                    if (indentLevel != 0)
+                    {
+                        var span = new HtmlElement(currentElement, Tag.Span)
+                        {
+                            StyleAttribute = new Styles
+                            {
+                                PaddingLeftEm = indentLevel * 3
+                            }
+                        };
+
+                        currentElement.Children.Add(span);
+                        currentElement = span;
+                    }
                 }
 
                 currentIndentLevel = indentLevel;
