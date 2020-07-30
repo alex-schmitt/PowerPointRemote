@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Office.Core;
 using Microsoft.Office.Interop.PowerPoint;
-using PresenterClient.NoteConverter;
 using PresenterClient.SignalR.Messages;
 using Shape = Microsoft.Office.Interop.PowerPoint.Shape;
 
@@ -141,12 +140,13 @@ namespace PresenterClient.Services
             if (bodyRange == null)
                 return null;
 
-            var noteBuilder = new NoteTreeBuilder();
-            var tree = noteBuilder.Build(bodyRange);
+            var temp = new NoteTreeBuilder(bodyRange);
+            var bre = temp.Build();
 
-            var stringBuilder = new StringBuilder();
-            tree.WriteHtml(stringBuilder);
-            return stringBuilder.ToString();
+            var moo = new StringBuilder();
+            bre.WriteHtml(moo);
+
+            return "";
         }
 
         private static TextRange GetSlideNoteBodyRange(Slide slide)

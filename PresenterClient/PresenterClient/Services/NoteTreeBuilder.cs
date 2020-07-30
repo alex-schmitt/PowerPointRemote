@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Core;
+﻿using System;
+using Microsoft.Office.Core;
 using Microsoft.Office.Interop.PowerPoint;
 using PresenterClient.NoteConverter;
 
@@ -7,129 +8,152 @@ namespace PresenterClient.Services
     // Builds a data structure to assist with converting a slide shows slide into Html.
     public class NoteTreeBuilder
     {
-        public RootNode Build(TextRange fullTextRange)
+        private readonly HtmlElement _root = new HtmlElement(null, Tag.Div);
+        private readonly TextRange _textRange;
+
+        public NoteTreeBuilder(TextRange textRange)
         {
-            var rootNode = new RootNode();
-            AddParagraphTree(fullTextRange, rootNode);
-            return rootNode;
+            _textRange = textRange;
         }
 
-        public ParagraphNode CreateParagraphNode(TextRange paragraph)
+        public HtmlElement Build()
         {
-            return new ParagraphNode
+            var currentInnerElement = _root;
+
+            for (var i = 1; i <= _textRange.Length; i++)
             {
-                Alignment = ConvertAlignment(paragraph.ParagraphFormat.Alignment),
-                List = ConvertList(paragraph.ParagraphFormat.Bullet.Type),
-                Indent = paragraph.IndentLevel - 1
-            };
-        }
+                var character = _textRange.Characters(i, 1);
+                var characterFormattingTags = GetFormattingTags(character);
 
-        public void AddParagraphTree(TextRange fullTextRange, RootNode rootNode)
-        {
-            for (var i = 1; i <= fullTextRange.Paragraphs().Count; i++)
-            {
-                var paragraphTextRange = fullTextRange.Paragraphs(i, 1);
-                var paragraphNode = CreateParagraphNode(paragraphTextRange);
-
-                if (paragraphTextRange.Text == "\r")
-                    paragraphNode.IsLineBreak = true;
-
-                rootNode.Children.Add(paragraphNode);
-                AddStringTree(paragraphTextRange, paragraphNode);
-            }
-        }
-
-        public StringNode CreateStringNode(TextRange character, StringNode parent)
-        {
-            return new StringNode(parent)
-            {
-                InlineTags = GetInlineFlags(character),
-                FontColor = character.Font.Color.RGB,
-                FontSize = character.Font.Size
-            };
-        }
-
-        public void AddStringTree(TextRange paragraph, ParagraphNode paragraphNode)
-        {
-            StringNode currentNode = null;
-
-            for (var x = 1; x <= paragraph.Characters().Count; x++)
-            {
-                var character = paragraph.Characters(x, 1);
-                var characterFlags = GetInlineFlags(character);
+                // Traverse up the Html tree, until the character can inherit styles and formatting tags
                 while (true)
                 {
-                    if (currentNode != null && characterFlags == currentNode.InlineTags)
+                    // Order of each statement matters.
+
+                    // Line breaks can't have children, traverse up the Html tree.
+                    if (currentInnerElement.Tag == Tag.Br)
+                        currentInnerElement = currentInnerElement.Parent;
+
+                    // The character is line break and doesn't need to inherit anything.
+                    if (character.Text == "\r")
                     {
-                        currentNode.InnerText.Append(character.Text);
+                        var innerElement = new HtmlElement(currentInnerElement, Tag.Br);
+                        currentInnerElement.Children.Add(innerElement);
+                        currentInnerElement = innerElement;
                         break;
                     }
 
-                    if (currentNode != null && (characterFlags | currentNode.InlineTags) == characterFlags)
+                    // The character can inherit all of the currentInnerElement tags and doesn't have additional tags.
+                    if (currentInnerElement.InheritingTags == characterFormattingTags)
                     {
-                        var node = CreateStringNode(character, currentNode);
-                        node.InnerText.Append(character.Text);
-                        currentNode.Children.Add(node);
-                        currentNode = node;
+                        AddTextToElement(currentInnerElement, character.Text);
                         break;
                     }
 
-                    if (currentNode?.Parent == null)
+                    // The character can inherit all of the currentInnerElement tags and has additional tags.
+                    if ((currentInnerElement.InheritingTags | characterFormattingTags) == characterFormattingTags)
                     {
-                        var node = CreateStringNode(character, null);
-                        node.InnerText.Append(character.Text);
-                        paragraphNode.Children.Add(node);
-                        currentNode = node;
+                        var additionalTags = characterFormattingTags ^ currentInnerElement.InheritingTags;
+                        currentInnerElement = AddFormattingElements(currentInnerElement, additionalTags);
+                        AddTextToElement(currentInnerElement, character.Text);
                         break;
                     }
 
-                    currentNode = currentNode.Parent;
+                    // Reached the parent, the character can inherit because the parent doesn't have any formatting or styling.
+                    if (currentInnerElement.Parent == null)
+                    {
+                        currentInnerElement = AddFormattingElements(currentInnerElement, characterFormattingTags);
+                        AddTextToElement(currentInnerElement, character.Text);
+                        break;
+                    }
+
+                    // Traverse up
+                    currentInnerElement = currentInnerElement.Parent;
                 }
             }
+
+            return _root;
         }
 
-        public static InlineTag GetInlineFlags(TextRange character)
+        /// <summary>
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="formattingTags"></param>
+        /// <returns>The inner most element</returns>
+        public static HtmlElement AddFormattingElements(HtmlElement parent, FormattingTag formattingTags)
         {
-            var flag = InlineTag.None;
-            if (character.Font.Bold == MsoTriState.msoTrue)
-                flag |= InlineTag.Bold;
-            if (character.Font.Italic == MsoTriState.msoTrue)
-                flag |= InlineTag.Italic;
-            if (character.Font.Underline == MsoTriState.msoTrue)
-                flag |= InlineTag.Underline;
-            if (character.Font.Subscript == MsoTriState.msoTrue)
-                flag |= InlineTag.Subscript;
-            if (character.Font.Superscript == MsoTriState.msoTrue)
-                flag |= InlineTag.Superscript;
+            var htmlElement = parent;
 
-            return flag;
+            foreach (FormattingTag formattingTag in Enum.GetValues(typeof(FormattingTag)))
+            {
+                if (!formattingTags.HasFlag(formattingTag) || formattingTag == FormattingTag.None) continue;
+
+                var innerElement = new HtmlElement(htmlElement, TagTable.FormattingToTag[formattingTag]);
+                htmlElement.Children.Add(innerElement);
+                htmlElement = innerElement;
+            }
+
+            return htmlElement;
         }
 
-        public static Alignment ConvertAlignment(PpParagraphAlignment ppAlignment)
+        private static void AddTextToElement(HtmlElement element, string text)
+        {
+            var children = element.Children;
+
+            if (children.Count > 0 && children[children.Count - 1] is HtmlText htmlText)
+                htmlText.Value.Append(text);
+            else
+                children.Add(new HtmlText(element, text));
+        }
+
+        public static FormattingTag GetFormattingTags(TextRange character)
+        {
+            if (character.Count > 1)
+                throw new InvalidOperationException(
+                    $"{nameof(GetFormattingTags)} only works on a TextRange with one character.");
+
+            var tags = FormattingTag.None;
+
+            if (character.Font.Bold == MsoTriState.msoTrue)
+                tags |= FormattingTag.Bold;
+            if (character.Font.Italic == MsoTriState.msoTrue)
+                tags |= FormattingTag.Italic;
+            if (character.Font.Underline == MsoTriState.msoTrue)
+                tags |= FormattingTag.Underline;
+            if (character.Font.Subscript == MsoTriState.msoTrue)
+                tags |= FormattingTag.Subscript;
+            if (character.Font.Superscript == MsoTriState.msoTrue)
+                tags |= FormattingTag.Superscript;
+
+            return tags;
+        }
+
+        public static TextAlign? ConvertAlignment(PpParagraphAlignment ppAlignment)
         {
             switch (ppAlignment)
             {
                 case PpParagraphAlignment.ppAlignLeft:
-                    return Alignment.Left;
+                    return null;
                 case PpParagraphAlignment.ppAlignCenter:
-                    return Alignment.Center;
+                    return TextAlign.Center;
                 case PpParagraphAlignment.ppAlignRight:
-                    return Alignment.Right;
+                    return TextAlign.Right;
                 case PpParagraphAlignment.ppAlignJustify:
-                    return Alignment.Justify;
+                    return TextAlign.Justify;
                 default:
-                    return Alignment.Left;
+                    return null;
             }
         }
 
-        public static List ConvertList(PpBulletType ppBullet)
+        public static Tag? ConvertList(PpBulletType ppBullet)
         {
             if (ppBullet == PpBulletType.ppBulletUnnumbered)
-                return List.Bullet;
+                return Tag.Ul;
             if (ppBullet == PpBulletType.ppBulletNumbered)
-                return List.Ordered;
+                return Tag.Ol;
 
-            return List.None;
+
+            return null;
         }
     }
 }

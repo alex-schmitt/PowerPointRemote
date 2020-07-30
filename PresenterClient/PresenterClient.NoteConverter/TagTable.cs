@@ -4,50 +4,40 @@ namespace PresenterClient.NoteConverter
 {
     public static class TagTable
     {
-        static TagTable()
+        public static Dictionary<Tag, string> TagToString = new Dictionary<Tag, string>
         {
-            Inline = CreateInlineTagTable();
-            Block = CreateBlockTagTable();
-            List = CreateListTagTable();
-        }
+            {Tag.Div, "div"},
+            {Tag.P, "p"},
+            {Tag.Ul, "ul"},
+            {Tag.Ol, "ol"},
+            {Tag.Li, "li"},
+            {Tag.Br, "br"},
+            {Tag.Strong, "strong"},
+            {Tag.Em, "em"},
+            {Tag.U, "u"},
+            {Tag.Sub, "sub"},
+            {Tag.Sup, "sup"},
+            {Tag.S, "s"}
+        };
 
-        public static Dictionary<InlineTag, string> Inline { get; }
-        public static Dictionary<BlockTag, string> Block { get; }
-        public static Dictionary<List, string> List { get; }
-
-        private static Dictionary<InlineTag, string> CreateInlineTagTable()
+        public static Dictionary<Tag, FormattingTag> TagToFormatting = new Dictionary<Tag, FormattingTag>
         {
-            return new Dictionary<InlineTag, string>
-            {
-                {InlineTag.Bold, "strong"},
-                {InlineTag.Italic, "em"},
-                {InlineTag.Underline, "u"},
-                {InlineTag.Subscript, "sub"},
-                {InlineTag.Superscript, "sup"},
-                {InlineTag.Strikethrough, "s"}
-            };
-        }
+            {Tag.Em, FormattingTag.Italic},
+            {Tag.Strong, FormattingTag.Bold},
+            {Tag.U, FormattingTag.Underline},
+            {Tag.S, FormattingTag.Strikethrough},
+            {Tag.Sub, FormattingTag.Subscript},
+            {Tag.Sup, FormattingTag.Superscript}
+        };
 
-        private static Dictionary<BlockTag, string> CreateBlockTagTable()
+        public static Dictionary<FormattingTag, Tag> FormattingToTag = new Dictionary<FormattingTag, Tag>
         {
-            return new Dictionary<BlockTag, string>
-            {
-                {BlockTag.Div, "div"},
-                {BlockTag.P, "p"},
-                {BlockTag.Ul, "ul"},
-                {BlockTag.Ol, "ol"},
-                {BlockTag.Li, "li"},
-                {BlockTag.Br, "br"}
-            };
-        }
-
-        private static Dictionary<List, string> CreateListTagTable()
-        {
-            return new Dictionary<List, string>
-            {
-                {NoteConverter.List.Ordered, Block[BlockTag.Ol]},
-                {NoteConverter.List.Bullet, Block[BlockTag.Ul]}
-            };
-        }
+            {FormattingTag.Italic, Tag.Em},
+            {FormattingTag.Bold, Tag.Strong},
+            {FormattingTag.Underline, Tag.U},
+            {FormattingTag.Strikethrough, Tag.S},
+            {FormattingTag.Subscript, Tag.Sub},
+            {FormattingTag.Superscript, Tag.Sup}
+        };
     }
 }

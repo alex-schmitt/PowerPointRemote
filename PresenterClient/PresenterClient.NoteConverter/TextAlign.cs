@@ -1,8 +1,7 @@
 ﻿namespace PresenterClient.NoteConverter
 {
-    public enum Alignment
+    public enum TextAlign
     {
-        Left,
         Center,
         Right,
         Justify

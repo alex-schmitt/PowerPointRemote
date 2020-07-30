@@ -3,7 +3,7 @@
 namespace PresenterClient.NoteConverter
 {
     [Flags]
-    public enum InlineTag
+    public enum FormattingTag
     {
         None = 0,
         Bold = 1,

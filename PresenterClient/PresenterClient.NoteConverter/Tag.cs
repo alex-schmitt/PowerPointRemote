@@ -1,12 +1,18 @@
 ﻿namespace PresenterClient.NoteConverter
 {
-    public enum BlockTag
+    public enum Tag
     {
         Div,
         P,
         Ul,
         Ol,
         Li,
-        Br
+        Br,
+        Strong,
+        Em,
+        U,
+        Sub,
+        Sup,
+        S
     }
 }
