@@ -123,8 +123,6 @@ namespace PresenterClient.Services
                     // Traverse up the Html tree, until the character can inherit styles and formatting tags
                     while (true)
                     {
-                        // Order of each statement matters.
-
                         // The character can inherit all of the currentInnerElement tags and doesn't have additional tags.
                         if (currentElement.InheritingTags == characterFormattingTags)
                         {
@@ -137,14 +135,6 @@ namespace PresenterClient.Services
                         {
                             var additionalTags = characterFormattingTags ^ currentElement.InheritingTags;
                             currentElement = AddFormattingElements(currentElement, additionalTags);
-                            AddTextToElement(currentElement, character.Text);
-                            break;
-                        }
-
-                        // Reached the parent, the character can inherit because the parent doesn't have any formatting or styling.
-                        if (currentElement.Parent == null)
-                        {
-                            currentElement = AddFormattingElements(currentElement, characterFormattingTags);
                             AddTextToElement(currentElement, character.Text);
                             break;
                         }
