@@ -19,15 +19,16 @@ namespace PresenterClient.Services
         public HtmlElement Build()
         {
             HtmlElement currentList = null;
-            var currentElement = _root;
+            var currentIndentLevel = 0;
 
             var paragraphCount = _textRange.Paragraphs().Count;
 
             for (var i = 1; i <= paragraphCount; i++)
             {
+                var currentElement = _root;
                 var paragraph = _textRange.Paragraphs(i, 1);
 
-                var alignment = ConvertAlignment(paragraph.ParagraphFormat.Alignment);
+                var indentLevel = paragraph.IndentLevel - 1;
                 var list = ConvertList(paragraph.ParagraphFormat.Bullet.Type);
 
                 if (paragraph.Text == "\r")
@@ -69,13 +70,21 @@ namespace PresenterClient.Services
                 if (list != null)
                 {
                     // Start a new list
-                    if (currentList == null)
+                    if (currentList == null || indentLevel > currentIndentLevel)
                     {
-                        currentList = new HtmlElement(currentElement, list.GetValueOrDefault());
-                        currentElement.Children.Add(currentList);
+                        var parent = currentList ?? currentElement;
+
+                        currentList = new HtmlElement(parent, list.GetValueOrDefault());
+                        parent.Children.Add(currentList);
                     }
 
-                    // Enter the list
+                    // Use the parent current list parent 
+                    else if (indentLevel < currentIndentLevel)
+                    {
+                        currentList = currentList.Parent;
+                    }
+
+                    // Add the list item
                     var listItem = new HtmlElement(currentList, Tag.Li);
                     currentList.Children.Add(listItem);
                     currentElement = listItem;
@@ -84,6 +93,8 @@ namespace PresenterClient.Services
                 {
                     currentList = null;
                 }
+
+                currentIndentLevel = indentLevel;
 
 
                 for (var x = 1; x <= paragraph.Length; x++)
@@ -132,8 +143,6 @@ namespace PresenterClient.Services
                 // lists are block items, no line break is needed if we are in a list
                 if (currentList == null)
                     currentElement.Children.Add(new HtmlElement(_root, Tag.Br));
-
-                currentElement = _root;
             }
 
 
