@@ -18,59 +18,124 @@ namespace PresenterClient.Services
 
         public HtmlElement Build()
         {
-            var currentInnerElement = _root;
+            HtmlElement currentList = null;
+            var currentElement = _root;
 
-            for (var i = 1; i <= _textRange.Length; i++)
+            var paragraphCount = _textRange.Paragraphs().Count;
+
+            for (var i = 1; i <= paragraphCount; i++)
             {
-                var character = _textRange.Characters(i, 1);
-                var characterFormattingTags = GetFormattingTags(character);
+                var paragraph = _textRange.Paragraphs(i, 1);
 
-                // Traverse up the Html tree, until the character can inherit styles and formatting tags
-                while (true)
+                var alignment = ConvertAlignment(paragraph.ParagraphFormat.Alignment);
+                var list = ConvertList(paragraph.ParagraphFormat.Bullet.Type);
+
+                if (paragraph.Text == "\r")
                 {
-                    // Order of each statement matters.
-
-                    // Line breaks can't have children, traverse up the Html tree.
-                    if (currentInnerElement.Tag == Tag.Br)
-                        currentInnerElement = currentInnerElement.Parent;
-
-                    // The character is line break and doesn't need to inherit anything.
-                    if (character.Text == "\r")
+                    /* Signifies that there is a line break within the current list, but there are still list items.
+                     * The cleanest way to add a line break between list items in html looks like this <ul><li>Hello<br><br></li><li>world</li></ul>
+                     */
+                    if ((currentList != null) & (list != null))
                     {
-                        var innerElement = new HtmlElement(currentInnerElement, Tag.Br);
-                        currentInnerElement.Children.Add(innerElement);
-                        currentInnerElement = innerElement;
-                        break;
+                        // Guaranteed to be a HtmlElement because <ul> and <ol> can't anything except for <li> elements (invalid Html).
+                        var lastListItem = (HtmlElement) currentList.Children[currentList.Children.Count - 1];
+
+                        var lastListItemLastChild = lastListItem.Children[lastListItem.Children.Count - 1];
+
+                        if (lastListItemLastChild is HtmlElement htmlElement && htmlElement.Tag == Tag.Br)
+                        {
+                            lastListItem.Children.Add(new HtmlElement(lastListItem, Tag.Br));
+                        }
+                        else
+                        {
+                            lastListItem.Children.Add(new HtmlElement(lastListItem, Tag.Br));
+                            lastListItem.Children.Add(new HtmlElement(lastListItem, Tag.Br));
+                        }
+
+                        continue;
                     }
 
-                    // The character can inherit all of the currentInnerElement tags and doesn't have additional tags.
-                    if (currentInnerElement.InheritingTags == characterFormattingTags)
+                    // The list has ended, no need for <br> since it was a block item.
+                    if (currentList != null)
                     {
-                        AddTextToElement(currentInnerElement, character.Text);
-                        break;
+                        currentList = null;
+                        continue;
                     }
 
-                    // The character can inherit all of the currentInnerElement tags and has additional tags.
-                    if ((currentInnerElement.InheritingTags | characterFormattingTags) == characterFormattingTags)
-                    {
-                        var additionalTags = characterFormattingTags ^ currentInnerElement.InheritingTags;
-                        currentInnerElement = AddFormattingElements(currentInnerElement, additionalTags);
-                        AddTextToElement(currentInnerElement, character.Text);
-                        break;
-                    }
-
-                    // Reached the parent, the character can inherit because the parent doesn't have any formatting or styling.
-                    if (currentInnerElement.Parent == null)
-                    {
-                        currentInnerElement = AddFormattingElements(currentInnerElement, characterFormattingTags);
-                        AddTextToElement(currentInnerElement, character.Text);
-                        break;
-                    }
-
-                    // Traverse up
-                    currentInnerElement = currentInnerElement.Parent;
+                    currentElement = _root;
+                    currentElement.Children.Add(new HtmlElement(_root, Tag.Br));
                 }
+
+                if (list != null)
+                {
+                    // Start a new list
+                    if (currentList == null)
+                    {
+                        currentList = new HtmlElement(currentElement, list.GetValueOrDefault());
+                        currentElement.Children.Add(currentList);
+                    }
+
+                    // Enter the list
+                    var listItem = new HtmlElement(currentList, Tag.Li);
+                    currentList.Children.Add(listItem);
+                    currentElement = listItem;
+                }
+                else
+                {
+                    currentList = null;
+                }
+
+
+                for (var x = 1; x <= paragraph.Length; x++)
+                {
+                    var character = paragraph.Characters(x, 1);
+
+                    if (character.Text == "\r")
+                        break;
+
+                    var characterFormattingTags = GetFormattingTags(character);
+
+                    // Traverse up the Html tree, until the character can inherit styles and formatting tags
+                    while (true)
+                    {
+                        // Order of each statement matters.
+
+                        // The character can inherit all of the currentInnerElement tags and doesn't have additional tags.
+                        if (currentElement.InheritingTags == characterFormattingTags)
+                        {
+                            AddTextToElement(currentElement, character.Text);
+                            break;
+                        }
+
+                        // The character can inherit all of the currentInnerElement tags and has additional tags.
+                        if ((currentElement.InheritingTags | characterFormattingTags) == characterFormattingTags)
+                        {
+                            var additionalTags = characterFormattingTags ^ currentElement.InheritingTags;
+                            currentElement = AddFormattingElements(currentElement, additionalTags);
+                            AddTextToElement(currentElement, character.Text);
+                            break;
+                        }
+
+                        // Reached the parent, the character can inherit because the parent doesn't have any formatting or styling.
+                        if (currentElement.Parent == null)
+                        {
+                            currentElement = AddFormattingElements(currentElement, characterFormattingTags);
+                            AddTextToElement(currentElement, character.Text);
+                            break;
+                        }
+
+                        // Traverse up
+                        currentElement = currentElement.Parent;
+                    }
+                }
+
+                // lists are block items, no line break is needed if we are in a list
+                if (currentList == null)
+                    currentElement.Children.Add(new HtmlElement(_root, Tag.Br));
+
+                currentElement = _root;
             }
+
 
             return _root;
         }
@@ -151,7 +216,6 @@ namespace PresenterClient.Services
                 return Tag.Ul;
             if (ppBullet == PpBulletType.ppBulletNumbered)
                 return Tag.Ol;
-
 
             return null;
         }
