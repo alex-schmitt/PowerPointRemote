@@ -8,7 +8,7 @@ namespace PresenterClient.Services
     // Builds a data structure to assist with converting a slide shows slide into Html.
     public class NoteTreeBuilder
     {
-        private readonly HtmlElement _root = new HtmlElement(null, Tag.Div);
+        private readonly HtmlElement _root = new HtmlElement(null, Tag.Section);
         private readonly TextRange _textRange;
 
         public NoteTreeBuilder(TextRange textRange)
