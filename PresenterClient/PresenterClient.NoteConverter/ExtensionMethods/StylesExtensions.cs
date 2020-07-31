@@ -18,8 +18,8 @@ namespace PresenterClient.NoteConverter.ExtensionMethods
             if (styles.FontSizeEm != null)
                 builder.Append($"font-size:{styles.FontSizeEm}em;");
 
-            if (styles.PaddingLeftEm != null)
-                builder.Append($"padding-left:{styles.PaddingLeftEm}em;");
+            if (styles.TextIndentEm != null)
+                builder.Append($"text-indent:{styles.TextIndentEm}em;");
 
             if (styles.TextAlign != null)
                 builder.Append($"text-align:{TextAlignTable.Table[styles.TextAlign]};");

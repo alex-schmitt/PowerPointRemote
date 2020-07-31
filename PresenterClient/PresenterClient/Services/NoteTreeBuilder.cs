@@ -25,25 +25,25 @@ namespace PresenterClient.Services
 
             for (var i = 1; i <= paragraphCount; i++)
             {
-                var currentElement = _root;
-                var paragraph = _textRange.Paragraphs(i, 1);
+                var paragraphTextRange = _textRange.Paragraphs(i, 1);
 
-                var indentLevel = paragraph.IndentLevel - 1;
-                var list = ConvertList(paragraph.ParagraphFormat.Bullet.Type);
+                var list = ConvertList(paragraphTextRange.ParagraphFormat.Bullet.Type);
 
-                if (paragraph.Text == "\r")
+                /*
+                 * Paragraph TextRanges that only consists of a line breaks need to be handled specially because <p></p> is not valid html.
+                 * Also, you cannot have <br> or <p> tags as direct decedents of <ul> and <ol> elements.
+                 */
+                if (paragraphTextRange.Text == "\r")
                 {
-                    /* Signifies that there is a line break within the current list, but there are still list items.
-                     * The cleanest way to add a line break between list items in html looks like this <ul><li>Hello<br><br></li><li>world</li></ul>
-                     */
-                    if ((currentList != null) & (list != null))
+                    // The cleanest way to add a line break between list items, <ul><li>Hello<br><br></li><li>world</li></ul>
+                    if (currentList != null && list != null)
                     {
-                        // Guaranteed to be a HtmlElement because <ul> and <ol> can't anything except for <li> elements (invalid Html).
+                        // Guaranteed to be a HtmlElement because <ul> and <ol> can't anything except for <li>, <ul>, and <ol> elements.
                         var lastListItem = (HtmlElement) currentList.Children[currentList.Children.Count - 1];
+                        var lastListItemChild = lastListItem.Children[lastListItem.Children.Count - 1];
 
-                        var lastListItemLastChild = lastListItem.Children[lastListItem.Children.Count - 1];
-
-                        if (lastListItemLastChild is HtmlElement htmlElement && htmlElement.Tag == Tag.Br)
+                        // If it is the first line break after a list item, two line breaks are needed, otherwise just one is needed.
+                        if (lastListItemChild is HtmlElement htmlElement && htmlElement.Tag == Tag.Br)
                         {
                             lastListItem.Children.Add(new HtmlElement(lastListItem, Tag.Br));
                         }
@@ -56,29 +56,38 @@ namespace PresenterClient.Services
                         continue;
                     }
 
-                    // The list has ended, no need for <br> since it was a block item.
-                    if (currentList != null)
-                    {
-                        currentList = null;
-                        continue;
-                    }
+                    // Guaranteed to be a HtmlElement because the root should only contain <p>, <ul>, or <ol> elements.
+                    // The best way to add a 
+                    var previousParagraph = (HtmlElement) _root.Children[_root.Children.Count - 1];
+                    previousParagraph.Children.Add(new HtmlElement(previousParagraph, Tag.Br));
 
-                    currentElement = _root;
-                    currentElement.Children.Add(new HtmlElement(_root, Tag.Br));
+                    continue;
                 }
 
-                if (list != null)
+
+                var indentLevel = paragraphTextRange.IndentLevel - 1;
+
+                // If previously paragraph was a list and current paragraph is not, exit the list by setting currentList to null
+                if (list == null)
+                    currentList = null;
+
+                // In Html, new paragraphs start with the <p> element, unless it is a ordered/unordered list.
+                HtmlElement currentElement;
+                if (list == null)
+                {
+                    currentElement = new HtmlElement(_root, Tag.P);
+                    _root.Children.Add(currentElement);
+                }
+                else
                 {
                     // Start a new list
                     if (currentList == null || indentLevel > currentIndentLevel)
                     {
-                        var parent = currentList ?? currentElement;
-
+                        var parent = currentList ?? _root;
                         currentList = new HtmlElement(parent, list.GetValueOrDefault());
                         parent.Children.Add(currentList);
                     }
-
-                    // Use the parent current list parent 
+                    // Traverse up a list
                     else if (indentLevel < currentIndentLevel)
                     {
                         currentList = currentList.Parent;
@@ -89,31 +98,20 @@ namespace PresenterClient.Services
                     currentList.Children.Add(listItem);
                     currentElement = listItem;
                 }
-                else
+
+                if (currentList == null && indentLevel != 0)
                 {
-                    currentList = null;
+                    if (currentElement.StyleAttribute == null)
+                        currentElement.StyleAttribute = new Styles();
 
-                    if (indentLevel != 0)
-                    {
-                        var span = new HtmlElement(currentElement, Tag.Span)
-                        {
-                            StyleAttribute = new Styles
-                            {
-                                PaddingLeftEm = indentLevel * 3
-                            }
-                        };
-
-                        currentElement.Children.Add(span);
-                        currentElement = span;
-                    }
+                    currentElement.StyleAttribute.TextIndentEm = (float?) (indentLevel * 2.5);
                 }
 
                 currentIndentLevel = indentLevel;
 
-
-                for (var x = 1; x <= paragraph.Length; x++)
+                for (var x = 1; x <= paragraphTextRange.Length; x++)
                 {
-                    var character = paragraph.Characters(x, 1);
+                    var character = paragraphTextRange.Characters(x, 1);
 
                     if (character.Text == "\r")
                         break;
@@ -143,12 +141,7 @@ namespace PresenterClient.Services
                         currentElement = currentElement.Parent;
                     }
                 }
-
-                // lists are block items, no line break is needed if we are in a list
-                if (currentList == null)
-                    currentElement.Children.Add(new HtmlElement(_root, Tag.Br));
             }
-
 
             return _root;
         }

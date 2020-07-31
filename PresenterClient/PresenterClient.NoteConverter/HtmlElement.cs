@@ -29,9 +29,9 @@ namespace PresenterClient.NoteConverter
             // With html, parent styles overwrite other ancestor styles.
             InheritingStyle.TextAlign =
                 parent == null ? null : parent.StyleAttribute.TextAlign ?? parent.InheritingStyle.TextAlign;
-            InheritingStyle.PaddingLeftEm = parent == null
+            InheritingStyle.TextIndentEm = parent == null
                 ? null
-                : parent.StyleAttribute.PaddingLeftEm ?? parent.InheritingStyle.PaddingLeftEm;
+                : parent.StyleAttribute.TextIndentEm ?? parent.InheritingStyle.TextIndentEm;
             InheritingStyle.FontSizeEm = parent == null
                 ? null
                 : parent.StyleAttribute.FontSizeEm ?? parent.InheritingStyle.FontSizeEm;
