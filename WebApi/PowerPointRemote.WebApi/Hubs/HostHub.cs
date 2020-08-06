@@ -64,8 +64,6 @@ namespace PowerPointRemote.WebApi.Hubs
 
         public async Task SetCurrentSlideDetail(SlideDetailMsg slideDetailMsg)
         {
-            // TODO: Sanitize HTML
-
             var channelId = Context.User.FindFirst("ChannelId").Value;
 
             await _userHubContext.SendCurrentSlideDetail(channelId, slideDetailMsg);
@@ -74,13 +72,11 @@ namespace PowerPointRemote.WebApi.Hubs
             {
                 Id = channelId,
                 CurrentSlidePosition = slideDetailMsg.CurrentPosition,
-                CurrentSlideNotes = slideDetailMsg.CurrentSlideNotes,
                 LastUpdate = new DateTime()
             };
 
             _applicationDbContext.Attach(channelUpdate);
             _applicationDbContext.Entry(channelUpdate).Property(p => p.CurrentSlidePosition).IsModified = true;
-            _applicationDbContext.Entry(channelUpdate).Property(p => p.CurrentSlideNotes).IsModified = true;
             _applicationDbContext.Entry(channelUpdate).Property(p => p.LastUpdate).IsModified = true;
 
             await _applicationDbContext.SaveChangesAsync();

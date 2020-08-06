@@ -82,7 +82,6 @@
     <Compile Include="Services\ISignalRService.cs" />
     <Compile Include="Services\SignalRService.cs" />
     <Compile Include="Services\PowerPointService.cs" />
-    <Compile Include="Services\NoteTreeBuilder.cs" />
     <Compile Include="ViewModels\ChannelControlsViewModel.cs" />
     <Compile Include="ViewModels\ChannelUsersViewModel.cs" />
     <Compile Include="ViewModels\ConnectionDetailViewModel.cs" />
@@ -135,10 +134,6 @@
     <ProjectReference Include="..\PresenterClient.Http\PresenterClient.Http.csproj">
       <Project>{6397788f-45f4-461f-9a6d-7d6d4ad6100e}</Project>
       <Name>PresenterClient.Http</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PresenterClient.NoteConverter\PresenterClient.NoteConverter.csproj">
-      <Project>{626a98f4-26d6-4f30-b19e-4814ab623579}</Project>
-      <Name>PresenterClient.NoteConverter</Name>
     </ProjectReference>
     <ProjectReference Include="..\PresenterClient.SignalR\PresenterClient.SignalR.csproj">
       <Project>{a81c2d1a-085c-4a6a-b474-a4297928054f}</Project>

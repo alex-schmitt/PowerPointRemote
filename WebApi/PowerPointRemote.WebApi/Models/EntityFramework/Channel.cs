@@ -10,7 +10,6 @@ namespace PowerPointRemote.WebApi.Models.EntityFramework
         public bool SlideShowStarted { get; set; }
         public int SlideCount { get; set; }
         public int CurrentSlidePosition { get; set; }
-        public string CurrentSlideNotes { get; set; }
         public DateTime LastUpdate { get; set; }
 
         public virtual ICollection<User> Users { get; set; }

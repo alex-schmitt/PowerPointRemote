@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Office.Core;
 using Microsoft.Office.Interop.PowerPoint;
@@ -13,8 +12,6 @@ namespace PresenterClient.Services
     public class PowerPointService : IPowerPointService
     {
         private Application _application;
-
-        private string[] _currentSlideShowNotes;
 
         public PowerPointService()
         {
@@ -62,15 +59,8 @@ namespace PresenterClient.Services
             }
             else
             {
-                var presentation = slideShowWindow.Presentation;
-                var slides = presentation.Slides;
-
-                _currentSlideShowNotes = new string[slides.Count];
-                for (var i = 0; i < slides.Count; i++)
-                    _currentSlideShowNotes[i] = GetSlideNotes(slides[i + 1]);
-
-                CurrentSlideShowDetail.SlideCount = slideShowWindow.Presentation.Slides.Count;
                 CurrentSlideShowDetail.Started = true;
+                CurrentSlideShowDetail.SlideCount = slideShowWindow.Presentation.Slides.Count;
             }
         }
 
@@ -79,7 +69,6 @@ namespace PresenterClient.Services
             var view = slideShowWindow.View;
 
             CurrentSlideDetail.CurrentPosition = view.CurrentShowPosition;
-            CurrentSlideDetail.CurrentSlideNotes = _currentSlideShowNotes[view.CurrentShowPosition - 1];
         }
 
         private void ApplicationOnSlideShowEnd(Presentation presentation)
@@ -112,10 +101,6 @@ namespace PresenterClient.Services
 
             if (CurrentSlideShowWindow != slideShowWindow)
             {
-                _currentSlideShowNotes = new string[slides.Count];
-                for (var i = 0; i < slides.Count; i++)
-                    _currentSlideShowNotes[i] = GetSlideNotes(slides[i + 1]);
-
                 SetCurrentSlidesShowDetail(slideShowWindow);
                 SlideShowChanged?.Invoke(this, CurrentSlideShowDetail);
             }
@@ -128,25 +113,6 @@ namespace PresenterClient.Services
             }
 
             CurrentSlideShowWindow = slideShowWindow;
-        }
-
-        private static string GetSlideNotes(Slide slide)
-        {
-            if (slide == null || slide.HasNotesPage == MsoTriState.msoFalse)
-                return null;
-
-            var bodyRange = GetSlideNoteBodyRange(slide);
-
-            if (bodyRange == null)
-                return null;
-
-            var temp = new NoteTreeBuilder(bodyRange);
-            var bre = temp.Build();
-
-            var moo = new StringBuilder();
-            bre.WriteHtml(moo);
-
-            return "";
         }
 
         private static TextRange GetSlideNoteBodyRange(Slide slide)

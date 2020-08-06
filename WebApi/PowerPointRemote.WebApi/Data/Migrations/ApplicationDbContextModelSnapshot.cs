@@ -25,9 +25,6 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 b.Property<bool>("ChannelEnded")
                     .HasColumnType("tinyint(1)");
 
-                b.Property<string>("CurrentSlideNotes")
-                    .HasColumnType("longtext CHARACTER SET utf8mb4");
-
                 b.Property<int>("CurrentSlidePosition")
                     .HasColumnType("int");
 

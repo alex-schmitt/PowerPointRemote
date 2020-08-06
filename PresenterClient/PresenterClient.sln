@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenterClient.Common", "P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenterClient.Http", "PresenterClient.Http\PresenterClient.Http.csproj", "{6397788F-45F4-461F-9A6D-7D6D4AD6100E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenterClient.NoteConverter", "PresenterClient.NoteConverter\PresenterClient.NoteConverter.csproj", "{626A98F4-26D6-4F30-B19E-4814AB623579}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{6397788F-45F4-461F-9A6D-7D6D4AD6100E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6397788F-45F4-461F-9A6D-7D6D4AD6100E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6397788F-45F4-461F-9A6D-7D6D4AD6100E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{626A98F4-26D6-4F30-B19E-4814AB623579}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{626A98F4-26D6-4F30-B19E-4814AB623579}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{626A98F4-26D6-4F30-B19E-4814AB623579}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{626A98F4-26D6-4F30-B19E-4814AB623579}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
