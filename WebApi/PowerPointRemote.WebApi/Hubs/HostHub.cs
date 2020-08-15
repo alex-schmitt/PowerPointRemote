@@ -40,53 +40,37 @@ namespace PowerPointRemote.WebApi.Hubs
             await _userHubContext.SendHostDisconnected(channelId);
         }
 
-        public async Task SetSlideShowDetail(SlideShowDetailMsg slideShowDetailMsg)
-        {
-            var channelId = Context.User.FindFirst("ChannelId").Value;
-
-            await _userHubContext.SendSlideShowDetail(channelId, slideShowDetailMsg);
-
-            var channelUpdate = new Channel
-            {
-                Id = channelId,
-                SlideShowStarted = slideShowDetailMsg.Started,
-                SlideCount = slideShowDetailMsg.SlideCount,
-                LastUpdate = new DateTime()
-            };
-
-            _applicationDbContext.Attach(channelUpdate);
-            _applicationDbContext.Entry(channelUpdate).Property(p => p.SlideShowStarted).IsModified = true;
-            _applicationDbContext.Entry(channelUpdate).Property(p => p.SlideCount).IsModified = true;
-            _applicationDbContext.Entry(channelUpdate).Property(p => p.LastUpdate).IsModified = true;
-
-            await _applicationDbContext.SaveChangesAsync();
-        }
-
-        public async Task SetCurrentSlideDetail(SlideDetailMsg slideDetailMsg)
-        {
-            var channelId = Context.User.FindFirst("ChannelId").Value;
-
-            await _userHubContext.SendCurrentSlideDetail(channelId, slideDetailMsg);
-
-            var channelUpdate = new Channel
-            {
-                Id = channelId,
-                CurrentSlidePosition = slideDetailMsg.CurrentPosition,
-                LastUpdate = new DateTime()
-            };
-
-            _applicationDbContext.Attach(channelUpdate);
-            _applicationDbContext.Entry(channelUpdate).Property(p => p.CurrentSlidePosition).IsModified = true;
-            _applicationDbContext.Entry(channelUpdate).Property(p => p.LastUpdate).IsModified = true;
-
-            await _applicationDbContext.SaveChangesAsync();
-        }
-
         public Task SetUserPermission(UserPermissionMsg userPermissionMsg)
         {
             _userPermissionRepository.SetPermission(userPermissionMsg.UserId,
                 new UserPermission {AllowControl = userPermissionMsg.AllowControl});
             return Task.CompletedTask;
+        }
+
+        public async Task SetSlideCount(int count)
+        {
+            var channelId = Context.User.FindFirst("ChannelId").Value;
+
+            await _userHubContext.SendSlideCount(channelId, count);
+
+            var channelUpdate = new Channel {Id = channelId, SlideCount = count};
+            _applicationDbContext.Attach(channelUpdate);
+            _applicationDbContext.Entry(channelUpdate).Property(p => p.SlideCount).IsModified = true;
+
+            await _applicationDbContext.SaveChangesAsync();
+        }
+
+        public async Task SetSlidePosition(int position)
+        {
+            var channelId = Context.User.FindFirst("ChannelId").Value;
+
+            await _userHubContext.SendSetSlidePosition(channelId, position);
+
+            var channelUpdate = new Channel {Id = channelId, SlidePosition = position};
+            _applicationDbContext.Attach(channelUpdate);
+            _applicationDbContext.Entry(channelUpdate).Property(p => p.SlidePosition).IsModified = true;
+
+            await _applicationDbContext.SaveChangesAsync();
         }
 
         public async Task StopChannel()

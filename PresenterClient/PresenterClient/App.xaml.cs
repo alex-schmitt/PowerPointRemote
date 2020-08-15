@@ -11,14 +11,14 @@ namespace PresenterClient
     /// </summary>
     public partial class App
     {
-        private readonly IPowerPointService _powerPointService;
+        private readonly IPresentationService _presentationService;
         private readonly ISignalRService _signalRService;
 
         public App()
         {
-            _powerPointService = new PowerPointService();
+            _presentationService = new PresentationService();
             _signalRService = new SignalRService();
-            GC.KeepAlive(new ChannelBackgroundService(_powerPointService, _signalRService));
+            GC.KeepAlive(new ChannelBackgroundService(_presentationService, _signalRService));
 
             // The initial start of the signalR service.  Start/stop will later be invoked by UI control only.
             _signalRService.StartAsync().ConfigureAwait(false);
@@ -31,7 +31,7 @@ namespace PresenterClient
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.RegisterInstance(_powerPointService);
+            containerRegistry.RegisterInstance(_presentationService);
             containerRegistry.RegisterInstance(_signalRService);
         }
     }

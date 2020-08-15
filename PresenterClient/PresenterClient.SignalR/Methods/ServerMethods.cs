@@ -3,8 +3,8 @@
     public static class ServerMethods
     {
         public const string StopChannel = "StopChannel";
-        public const string SetSlideShowDetail = "SetSlideShowDetail";
-        public const string SetCurrentSlideDetail = "SetCurrentSlideDetail";
         public const string SetUserPermission = "SetUserPermission";
+        public const string SetSlideCount = "SetSlideCount";
+        public const string SetSlidePosition = "SetSlidePosition";
     }
 }

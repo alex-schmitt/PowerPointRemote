@@ -100,12 +100,7 @@ namespace PowerPointRemote.WebApi.Hubs
 
             if (channel == null) return new HubActionResult(HttpStatusCode.NotFound);
 
-            var state = new
-            {
-                Started = channel.SlideShowStarted,
-                channel.SlideCount,
-                channel.CurrentSlidePosition
-            };
+            var state = new {channel.SlideCount, channel.SlidePosition};
 
             return new HubActionResult(HttpStatusCode.OK, state);
         }

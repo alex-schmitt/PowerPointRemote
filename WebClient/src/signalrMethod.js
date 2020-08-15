@@ -2,10 +2,8 @@ export const clientMethod = {
   HostDisconnected: "HostDisconnected",
   HostConnected: "HostConnected",
   ChannelEnded: "ChannelEnded",
-  SlideShowStarted: "SlideShowStarted",
-  SlideShowEnded: "SlideShowEnded",
   SlideCountUpdated: "SlideCountUpdated",
-  CurrentSlideNumberUpdated: "CurrentSlideNumberUpdated",
+  SlidePositionUpdated: "SlidePositionUpdated",
 };
 
 export const serverMethod = {

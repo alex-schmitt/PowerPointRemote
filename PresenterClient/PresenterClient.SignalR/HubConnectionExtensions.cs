@@ -13,22 +13,22 @@ namespace PresenterClient.SignalR
             await hubConnection.SendAsync(ServerMethods.StopChannel);
         }
 
-        public static async Task SendSetSlideShowDetailAsync(this HubConnection hubConnection,
-            SlideShowDetailMsg slideShowDetailMsg)
-        {
-            await hubConnection.SendAsync(ServerMethods.SetSlideShowDetail, slideShowDetailMsg);
-        }
-
-        public static async Task SendSetCurrentSlideDetailAsync(this HubConnection hubConnection,
-            SlideDetailMsg slideDetailMsg)
-        {
-            await hubConnection.SendAsync(ServerMethods.SetCurrentSlideDetail, slideDetailMsg);
-        }
-
         public static async Task SendSetUserPermission(this HubConnection hubConnection,
             UserPermissionMsg userPermissionMsg)
         {
             await hubConnection.SendAsync(ServerMethods.SetUserPermission, userPermissionMsg);
+        }
+
+        public static async Task SendSetSlideShowCount(this HubConnection hubConnection,
+            int count)
+        {
+            await hubConnection.SendAsync(ServerMethods.SetSlideCount, count);
+        }
+
+        public static async Task SendSetSlideShowPosition(this HubConnection hubConnection,
+            int position)
+        {
+            await hubConnection.SendAsync(ServerMethods.SetSlidePosition, position);
         }
 
         public static void OnSlideShowActionReceived(this HubConnection hubConnection,

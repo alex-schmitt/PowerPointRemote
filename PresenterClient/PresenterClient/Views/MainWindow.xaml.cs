@@ -13,7 +13,7 @@ namespace PresenterClient.Views
         private readonly ChannelControlsView _channelControlsView;
         private readonly ChannelUsersView _channelUsersView;
         private readonly ConnectionDetailView _connectionDetailView;
-        private readonly IPowerPointService _powerPointService;
+        private readonly IPresentationService _presentationService;
         private readonly IRegionManager _regionManager;
         private readonly ISignalRService _signalRService;
 
@@ -22,14 +22,14 @@ namespace PresenterClient.Views
             ChannelControlsView channelControlsView,
             IRegionManager regionManager,
             ISignalRService signalRService,
-            IPowerPointService powerPointService)
+            IPresentationService presentationService)
         {
             _connectionDetailView = connectionDetailView;
             _channelUsersView = channelUsersView;
             _channelControlsView = channelControlsView;
             _regionManager = regionManager;
             _signalRService = signalRService;
-            _powerPointService = powerPointService;
+            _presentationService = presentationService;
 
             InitializeComponent();
 
@@ -47,7 +47,7 @@ namespace PresenterClient.Views
         private async void OnClosing(object sender, CancelEventArgs e)
         {
             Hide();
-            _powerPointService.Dispose();
+            _presentationService.Dispose();
 
             if (!_signalRService.IsStarted) return;
 

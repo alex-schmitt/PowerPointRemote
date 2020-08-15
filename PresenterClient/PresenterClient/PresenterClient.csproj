@@ -78,10 +78,10 @@
     </Compile>
     <Compile Include="Model\ChannelUser.cs" />
     <Compile Include="Services\ChannelBackgroundService.cs" />
-    <Compile Include="Services\IPowerPointService.cs" />
+    <Compile Include="Services\IPresentationService.cs" />
     <Compile Include="Services\ISignalRService.cs" />
     <Compile Include="Services\SignalRService.cs" />
-    <Compile Include="Services\PowerPointService.cs" />
+    <Compile Include="Services\PresentationService.cs" />
     <Compile Include="ViewModels\ChannelControlsViewModel.cs" />
     <Compile Include="ViewModels\ChannelUsersViewModel.cs" />
     <Compile Include="ViewModels\ConnectionDetailViewModel.cs" />

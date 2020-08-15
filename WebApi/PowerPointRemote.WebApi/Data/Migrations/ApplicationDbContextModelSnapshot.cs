@@ -25,17 +25,14 @@ namespace PowerPointRemote.WebApi.Data.Migrations
                 b.Property<bool>("ChannelEnded")
                     .HasColumnType("tinyint(1)");
 
-                b.Property<int>("CurrentSlidePosition")
-                    .HasColumnType("int");
-
                 b.Property<DateTime>("LastUpdate")
                     .HasColumnType("datetime(6)");
 
                 b.Property<int>("SlideCount")
                     .HasColumnType("int");
 
-                b.Property<bool>("SlideShowStarted")
-                    .HasColumnType("tinyint(1)");
+                b.Property<int>("SlidePosition")
+                    .HasColumnType("int");
 
                 b.HasKey("Id");
 

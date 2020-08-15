@@ -13,7 +13,7 @@ export const store = configureStore({
 
 export const { setConnectionStatus } = connectionSlice.actions;
 
-export const { setSlideShowState } = slideShowSlice.actions;
+export const { setSlideShowState, setSlidePosition, setSlideCount } = slideShowSlice.actions;
 
 export const {
   setChannelState,

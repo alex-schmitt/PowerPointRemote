@@ -1,7 +1,13 @@
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { apiAddress } from "./constants";
 import { refreshChannelState, refreshSlideShowState, sendSlideShowCommand } from "./thunks";
-import { setConnectionStatus, setHostConnected, setHostDisconnected } from "./store";
+import {
+  setConnectionStatus,
+  setHostConnected,
+  setHostDisconnected,
+  setSlideCount,
+  setSlidePosition,
+} from "./store";
 import { clientMethod } from "./signalrMethod";
 
 const createHubConnection = accessToken =>
@@ -15,6 +21,11 @@ export const registerChannelListeners = (hubConnection, store) => {
   hubConnection.on(clientMethod.HostDisconnected, () =>
     store.dispatch(setHostDisconnected(undefined))
   );
+  hubConnection.on(clientMethod.SlidePositionUpdated, position =>
+    store.dispatch(setSlidePosition(position))
+  );
+  hubConnection.on(clientMethod.SlideCountUpdated, count => store.dispatch(setSlideCount(count)));
+
   hubConnection.onreconnected(() => store.dispatch(setConnectionStatus(hubConnection.state)));
   hubConnection.onreconnecting(() => store.dispatch(setConnectionStatus(hubConnection.state)));
   hubConnection.onclose(() => store.dispatch(setConnectionStatus(hubConnection.state)));
