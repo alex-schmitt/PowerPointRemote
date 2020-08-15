@@ -92,7 +92,7 @@ namespace PowerPointRemote.WebApi.Hubs
             return new HubActionResult(HttpStatusCode.OK);
         }
 
-        public async Task<HubActionResult> GetSlideShowDetail()
+        public async Task<HubActionResult> GetSlideShowState()
         {
             var channelId = Context.User.FindFirst("ChannelId").Value;
 
@@ -100,13 +100,31 @@ namespace PowerPointRemote.WebApi.Hubs
 
             if (channel == null) return new HubActionResult(HttpStatusCode.NotFound);
 
-            var slideShowDetailUpdate = new SlideShowDetailMsg
+            var state = new
             {
                 Started = channel.SlideShowStarted,
-                SlideCount = channel.SlideCount
+                channel.SlideCount,
+                channel.CurrentSlidePosition
             };
 
-            return new HubActionResult(HttpStatusCode.OK, slideShowDetailUpdate);
+            return new HubActionResult(HttpStatusCode.OK, state);
+        }
+
+        public async Task<HubActionResult> GetChannelState()
+        {
+            var channelId = Context.User.FindFirst("ChannelId").Value;
+
+            var channel = await _applicationDbContext.Channels.FindAsync(channelId);
+
+            if (channel == null) return new HubActionResult(HttpStatusCode.NotFound);
+
+            var state = new
+            {
+                Ended = channel.ChannelEnded,
+                HostConnected = _hostConnectionRepository.GetConnection(channelId) != null
+            };
+
+            return new HubActionResult(HttpStatusCode.OK, state);
         }
     }
 }

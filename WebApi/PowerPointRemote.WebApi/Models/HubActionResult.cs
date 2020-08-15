@@ -4,13 +4,13 @@ namespace PowerPointRemote.WebApi.Models
 {
     public class HubActionResult
     {
-        public HubActionResult(HttpStatusCode status, object body = null)
+        public HubActionResult(HttpStatusCode status, object data = null)
         {
             Status = status;
-            Body = body;
+            Data = data;
         }
 
         public HttpStatusCode Status { get; }
-        public object Body { get; }
+        public object Data { get; }
     }
 }

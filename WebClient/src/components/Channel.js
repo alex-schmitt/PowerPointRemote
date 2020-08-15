@@ -1,16 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import ControlChannel from "./ControlChannel";
-import JoinChannel from "./JoinChannel";
+import { joinChannel } from "../thunks";
+import { useDispatch } from "react-redux";
 
-const Channel = () => {
+const Channel = ({ channelService }) => {
+  const dispatch = useDispatch();
   const { channelId } = useParams();
 
-  const [accessToken, setAccessToken] = useState(localStorage.getItem(channelId.toUpperCase()));
+  useEffect(() => {
+    (async () => {
+      const result = await dispatch(joinChannel({ channelId, userName: "Alex" }));
 
-  if (accessToken) return <ControlChannel accessToken={accessToken} />;
+      if (!result.error) {
+        channelService.start(result.payload.accessToken);
+      }
+    })();
+  }, []);
 
-  return <JoinChannel setAccessToken={setAccessToken} channelId={channelId} />;
+  return <div>Hello</div>;
 };
 
 export default Channel;
