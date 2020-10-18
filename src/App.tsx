@@ -5,8 +5,9 @@ import Home from './components/Home'
 import MainHeader from './components/MainHeader'
 
 const GlobalStyle = createGlobalStyle`
-  body {
+  body, input, label {
     font-family: Helvetica, Arial, sans-serif;
+    font-size: 16px;
   }
 `
 
