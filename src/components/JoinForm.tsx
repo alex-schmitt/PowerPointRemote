@@ -22,7 +22,6 @@ const TextInput = styled.input.attrs({
 `
 
 const SubmitContainer = styled.div`
-  width: 100%;
   text-align: right;
 `
 
