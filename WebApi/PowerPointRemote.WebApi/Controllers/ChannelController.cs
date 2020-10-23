@@ -48,7 +48,7 @@ namespace PowerPointRemote.WebApi.Controllers
             var channel = await _applicationDbContext.Channels.FindAsync(joinChannelRequest.ChannelId.ToUpper());
 
             if (channel == null)
-                return NotFound("This remote doesn't exist or has ended");
+                return NotFound(new {ErrorMessage = "This remote doesn't exist or has ended"});
 
             var user = new User
             {
