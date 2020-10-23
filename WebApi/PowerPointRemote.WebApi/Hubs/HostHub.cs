@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using PowerPointRemote.WebAPI.Data;
 using PowerPointRemote.WebAPI.Data.Repositories;
@@ -10,6 +11,7 @@ using PowerPointRemote.WebApi.Models.Messages;
 
 namespace PowerPointRemote.WebApi.Hubs
 {
+    [Authorize]
     public class HostHub : Hub
     {
         private readonly ApplicationDbContext _applicationDbContext;

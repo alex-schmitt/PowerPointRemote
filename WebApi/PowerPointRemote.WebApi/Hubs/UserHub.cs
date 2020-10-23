@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using PowerPointRemote.WebAPI.Data;
@@ -11,6 +12,7 @@ using PowerPointRemote.WebApi.Models.Messages;
 
 namespace PowerPointRemote.WebApi.Hubs
 {
+    [Authorize]
     public class UserHub : Hub
     {
         private readonly ApplicationDbContext _applicationDbContext;
@@ -80,7 +82,7 @@ namespace PowerPointRemote.WebApi.Hubs
             var channelId = Context.User.FindFirst("ChannelId").Value;
             var hostConnectionId = _hostConnectionRepository.GetConnection(channelId);
 
-            if (hostConnectionId == null) return new HubActionResult(HttpStatusCode.NotFound);
+            if (hostConnectionId == null) return new HubActionResult(HttpStatusCode.NotFound, "The channel has been closed by the host");
 
             await _hostHubContext.SendSlideShowCommand(hostConnectionId, new SlideShowActionMsg
             {
@@ -92,19 +94,6 @@ namespace PowerPointRemote.WebApi.Hubs
             return new HubActionResult(HttpStatusCode.OK);
         }
 
-        public async Task<HubActionResult> GetSlideShowState()
-        {
-            var channelId = Context.User.FindFirst("ChannelId").Value;
-
-            var channel = await _applicationDbContext.Channels.FindAsync(channelId);
-
-            if (channel == null) return new HubActionResult(HttpStatusCode.NotFound);
-
-            var state = new {channel.SlideCount, channel.SlidePosition};
-
-            return new HubActionResult(HttpStatusCode.OK, state);
-        }
-
         public async Task<HubActionResult> GetChannelState()
         {
             var channelId = Context.User.FindFirst("ChannelId").Value;
@@ -113,11 +102,7 @@ namespace PowerPointRemote.WebApi.Hubs
 
             if (channel == null) return new HubActionResult(HttpStatusCode.NotFound);
 
-            var state = new
-            {
-                Ended = channel.ChannelEnded,
-                HostConnected = _hostConnectionRepository.GetConnection(channelId) != null
-            };
+            var state = new {channel.SlideCount, channel.SlidePosition, channel.ChannelEnded};
 
             return new HubActionResult(HttpStatusCode.OK, state);
         }
