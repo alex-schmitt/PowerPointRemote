@@ -44,9 +44,10 @@ const scaleToPixels = (n: number): number => remoteScale * convertToPercentage(n
 
 const RemoteContainer = styled.div`
   white-space: nowrap;
+  overflow: hidden;
   margin: 0 auto;
 
-  @media all and (max-width: ${remoteScale - 1}px) {
+  @media all and (max-width: ${remoteScale}px) {
     width: ${buttonRightScale.width + buttonLeftScale.width - buttonRightScale.right}vw;
     height: ${buttonRightScale.height + buttonLeftScale.top}vw;
   }
@@ -62,7 +63,7 @@ const RemoteContainer = styled.div`
 const LeftButton = styled(Button)`
   background-color: #ebebeb;
 
-  @media all and (max-width: ${remoteScale - 1}px) {
+  @media all and (max-width: ${remoteScale}px) {
     top: ${buttonLeftScale.top}vw;
     left: ${buttonLeftScale.left}vw;
     width: ${buttonLeftScale.width}vw;
@@ -81,7 +82,7 @@ const ButtonRight = styled(Button)`
   background-color: #d8d8d8;
   border: solid white;
 
-  @media all and (max-width: ${remoteScale - 1}px) {
+  @media all and (max-width: ${remoteScale}px) {
     right: ${buttonRightScale.right}vw;
     border-width: ${buttonRightScale.borderWidth}vw;
     width: ${buttonRightScale.width}vw;
@@ -99,7 +100,7 @@ const ButtonRight = styled(Button)`
 const LeftChevronSvg = styled(SvgBase)`
   position: relative;
 
-  @media all and (max-width: ${remoteScale - 1}px) {
+  @media all and (max-width: ${remoteScale}px) {
     right: ${chevronLeftScale.right}vw;
     width: ${chevronLeftScale.width}vw;
   }
@@ -113,7 +114,7 @@ const LeftChevronSvg = styled(SvgBase)`
 const RightChevronSvg = styled(SvgBase)`
   position: relative;
 
-  @media all and (max-width: ${remoteScale - 1}px) {
+  @media all and (max-width: ${remoteScale}px) {
     left: ${chevronRightScale.left}vw;
     width: ${chevronRightScale.width}vw;
   }
