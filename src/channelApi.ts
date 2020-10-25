@@ -1,7 +1,20 @@
-import axios, { AxiosResponse } from 'axios'
-import { API_ADDRESS } from './constants'
+import { API_ADDRESS, JOIN_CHANNEL_ENDPOINT } from './constants'
 
-const api = axios.create({ baseURL: API_ADDRESS })
+export type JoinChannelRequestData = {
+  userName: string
+  channelId: string
+}
 
-export const joinChannel = (channelId: string, userName: string): Promise<AxiosResponse<{ accessToken: string }>> =>
-  api.post('/join-channel', { channelId, userName })
+export type JoinChannelResponseData = {
+  accessToken?: string
+  errors?: { [P in keyof JoinChannelRequestData]?: string[] }
+}
+
+export const joinChannel = async (data: JoinChannelRequestData): Promise<JoinChannelResponseData> => {
+  const response = await fetch(API_ADDRESS + JOIN_CHANNEL_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  return (await response.json()) as JoinChannelResponseData
+}

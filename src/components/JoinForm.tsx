@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
-import { joinChannel } from '../channelApi'
+import { joinChannel, JoinChannelRequestData, JoinChannelResponseData } from '../channelApi'
 import styled from 'styled-components'
+import { useForm } from 'react-hook-form'
+import { formValidation } from '../utils'
 
 const Form = styled.form`
   box-sizing: border-box;
@@ -11,12 +13,11 @@ const Form = styled.form`
 
 const TextInput = styled.input.attrs({
   type: 'text',
-})`
+})<{ error: boolean }>`
   padding: 0.6em;
   border-radius: 0.5em;
-  margin-bottom: 0.8em;
   outline: none;
-  border: grey solid 1px;
+  border: 1px solid ${props => (props.error ? 'red' : 'grey')};
   width: 100%;
   box-sizing: border-box;
 `
@@ -32,29 +33,61 @@ const SubmitInput = styled.input.attrs({
   border-radius: 0.5em;
   border: grey solid 1px;
   display: inline-block;
+  margin-top: 0.8em;
+`
+const FormLabel = styled.label`
+  display: inline-block;
+  margin-top: 0.8em;
 `
 
-const FormLabel = styled.label``
+const InputError = styled.div`
+  color: red;
+`
 
-const JoinForm: React.FC<{ setAccessToken: React.Dispatch<React.SetStateAction<string>>; channel: string }> = ({
-  setAccessToken,
-  channel,
-}) => {
-  const [userName, setUserName] = useState('')
-  const [channelId, setChannelId] = useState(channel)
+const JoinForm: React.FC<{
+  setAccessToken: React.Dispatch<React.SetStateAction<string>>
+  channel: string
+}> = ({ setAccessToken, channel }) => {
+  const { register, handleSubmit, errors, setError } = useForm<JoinChannelRequestData>()
 
-  const join = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const response = await joinChannel(channelId, userName)
-    setAccessToken(response.data.accessToken)
+  const submitForm = async (data: JoinChannelRequestData) => {
+    try {
+      const response = await joinChannel(data)
+      if (response.accessToken) setAccessToken(response.accessToken)
+      if (response.errors) formValidation.addServerErrors(response.errors, setError)
+      if (!response.accessToken && !response.errors) {
+        // TODO
+      }
+    } catch (error) {
+      // TODO
+    }
   }
 
   return (
-    <Form onSubmit={join}>
+    <Form onSubmit={handleSubmit(submitForm)}>
       <FormLabel htmlFor="userName">Username:</FormLabel>
-      <TextInput id="userName" value={userName} onChange={e => setUserName(e.target.value)} />
+      <TextInput
+        id="userName"
+        name="userName"
+        ref={register({
+          required: { value: true, message: 'A username is required to connect' },
+          minLength: { value: 2, message: 'Your username must be at least 2 characters' },
+          maxLength: { value: 20, message: 'Your username must be less than or equal to 20 characters' },
+        })}
+        error={!!errors.userName}
+      />
+      {errors.userName && <InputError>{errors.userName.message}</InputError>}
       <FormLabel htmlFor="channelId">Remote ID:</FormLabel>
-      <TextInput id="channelId" value={channelId} onChange={e => setChannelId(e.target.value)} />
+      <TextInput
+        id="channelId"
+        name="channelId"
+        ref={register({
+          required: { value: true, message: 'A remote ID is required to connect' },
+        })}
+        error={!!errors.channelId}
+        defaultValue={channel}
+      />
+      {errors.channelId && <InputError>{errors.channelId.message}</InputError>}
       <SubmitContainer>
         <SubmitInput value="Join Remote" />
       </SubmitContainer>
