@@ -82,7 +82,8 @@ namespace PowerPointRemote.WebApi.Hubs
             var channelId = Context.User.FindFirst("ChannelId").Value;
             var hostConnectionId = _hostConnectionRepository.GetConnection(channelId);
 
-            if (hostConnectionId == null) return new HubActionResult(HttpStatusCode.NotFound, "The channel has been closed by the host");
+            if (hostConnectionId == null)
+                return new HubActionResult(HttpStatusCode.NotFound, "The channel has been closed by the host");
 
             await _hostHubContext.SendSlideShowCommand(hostConnectionId, new SlideShowActionMsg
             {

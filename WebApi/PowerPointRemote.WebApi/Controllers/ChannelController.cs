@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using PowerPointRemote.WebApi.ApplicationSettings;
 using PowerPointRemote.WebAPI.Data;
+using PowerPointRemote.WebApi.Extensions;
 using PowerPointRemote.WebApi.Models.EntityFramework;
 using PowerPointRemote.WebApi.Models.HttpRequests;
 
@@ -45,10 +46,13 @@ namespace PowerPointRemote.WebApi.Controllers
         [HttpPost("join-channel")]
         public async Task<ActionResult> JoinChannel([FromBody] JoinChannelRequest joinChannelRequest)
         {
+            if (!ModelState.IsValid) return BadRequest(new {Errors = ModelState.ConvertErrorsToDictionary()});
+
             var channel = await _applicationDbContext.Channels.FindAsync(joinChannelRequest.ChannelId.ToUpper());
 
             if (channel == null)
-                return NotFound(new {ErrorMessage = "This remote doesn't exist or has ended"});
+                return NotFound(new
+                    {Errors = new {ChannelId = new[] {"The remote ID is incorrect or the session has ended."}}});
 
             var user = new User
             {
